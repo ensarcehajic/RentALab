@@ -11,4 +11,4 @@ Projekat za iznajmljivanje laboratorijske opreme na Fakultetu elektrotehnike u T
 ## Komunikacija
 
 - **Messenger**
-- **Discord**
+- **Google Meet**
