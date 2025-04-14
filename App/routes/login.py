@@ -2,8 +2,13 @@ from flask import Flask, render_template, redirect, url_for, flash, session
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField
 from wtforms.validators import DataRequired, Length
+import os
 
-app = Flask(__name__, template_folder="../templates")
+app = Flask(
+    __name__,
+    static_folder=os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'static')),
+    template_folder=os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'templates'))
+)
 app.secret_key = "4f6sb28f0sb9q83khs"
 
 class LoginForm(FlaskForm):
@@ -23,7 +28,7 @@ def login():
             return redirect(url_for('dashboard'))
         else:
             flash('Invalid username or password', 'danger')
-    return render_template('login.html', form=form)
+    return render_template('index.html', form=form)
 
 
 
