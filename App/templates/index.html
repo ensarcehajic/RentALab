@@ -13,7 +13,6 @@
       <h1>Welcome back!</h1>
       <p>Welcome to Rent a Lab - Let’s log you in</p>
 
-      <!-- Flask-WTF forma -->
       <form class="login-form" method="POST" action="{{ url_for('login') }}">
         {{ form.hidden_tag() }}
 
@@ -28,10 +27,9 @@
 
         <button type="submit">Login</button>
 
-        <p class="register-text">Don't have an account? <a href="#">Register</a></p>
+        <p class="register-text">Don't have an account? <a href="register">Register</a></p>
       </form>
 
-      <!-- Flash poruke -->
       {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
           <ul class="flash-messages">
