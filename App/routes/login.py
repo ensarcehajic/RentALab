@@ -26,7 +26,7 @@ def login():
             return redirect(url_for('login_bp.dashboard'))
         else:
             flash('Invalid username or password', 'danger')
-    return render_template('index.html', form=form)
+    return render_template('login.html', form=form)
 
 @login_bp.route('/dashboard')
 def dashboard():
