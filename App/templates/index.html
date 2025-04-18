@@ -13,7 +13,7 @@
       <h1>Welcome back!</h1>
       <p>Welcome to Rent a Lab - Let’s log you in</p>
 
-      <form class="login-form" method="POST" action="{{ url_for('login') }}">
+      <form class="login-form" method="POST" action="{{ url_for('login_bp.login') }}">
         {{ form.hidden_tag() }}
 
         <label for="username">Username</label>

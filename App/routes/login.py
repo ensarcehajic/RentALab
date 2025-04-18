@@ -1,50 +1,47 @@
-from flask import Flask, render_template, redirect, url_for, flash, session
+from flask import Blueprint, render_template, redirect, url_for, flash, session
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField
 from wtforms.validators import DataRequired, Length
 import os
 
-app = Flask(
-    __name__,
-    static_folder=os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'static')),
-    template_folder=os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'templates'))
-)
-app.secret_key = "4f6sb28f0sb9q83khs"
+
+template_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'templates'))
+static_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'static'))
+
+login_bp = Blueprint('login_bp', __name__, template_folder=template_dir, static_folder=static_dir)
 
 class LoginForm(FlaskForm):
-      username = StringField('Username', validators=[DataRequired(),Length(min=4, max= 20)])
-      password = PasswordField('Password', validators=[DataRequired(), Length(min=5, max=50)])
+    username = StringField('Username', validators=[DataRequired(), Length(min=4, max=20)])
+    password = PasswordField('Password', validators=[DataRequired(), Length(min=5, max=50)])
 
-
-@app.route('/login', methods=['GET', 'POST'])
+@login_bp.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
     if form.validate_on_submit():
         username = form.username.data
         password = form.password.data
         if username == 'admin' and password == 'admin':
-            session['user']=username
+            session['user'] = username
             flash('Login successful!', 'success')
-            return redirect(url_for('dashboard'))
+            return redirect(url_for('login_bp.dashboard'))
         else:
             flash('Invalid username or password', 'danger')
     return render_template('index.html', form=form)
 
-
-
-@app.route('/dashboard')
+@login_bp.route('/dashboard')
 def dashboard():
     if 'user' not in session:
-         flash("You must be logged in to view this page.",'danger')
-         return redirect(url_for('login'))
-    return "<h1>Welcome to the Dashboard!</h1>"
+        flash("You must be logged in to view this page.", 'danger')
+        return redirect(url_for('login_bp.login'))
+    username = session['user']
+    return f"<h1>Welcome to the Dashboard, {username}!</h1>"
 
-@app.route('/logout')
+@login_bp.route('/logout')
 def logout():
-     session.pop('user', None)
-     flash("You have been logged out.",'info')
-     return redirect(url_for('login')) 
+    session.pop('user', None)
+    flash("You have been logged out.", 'info')
+    return redirect(url_for('login_bp.login'))
 
-
-if __name__ == "__main__":
-        app.run(debug = True);
+@login_bp.route('/')
+def home():
+    return redirect(url_for('login_bp.login'))
