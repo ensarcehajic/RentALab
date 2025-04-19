@@ -1,0 +1,29 @@
+# Python bytecode i cache fajlovi
+__pycache__/
+*.py[cod]
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Virtualna okruženja
+venv/
+env/
+ENV/
+.venv/
+.pipenv/
+
+
+
+# Flask instance folder
+instance/
+
+
+# VS Code / IDE fajlovi
+.vscode/
+.idea/
+*.swp
+
+# Pytest fajlovi
+.pytest_cache/
