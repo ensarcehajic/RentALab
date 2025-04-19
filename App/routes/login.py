@@ -2,8 +2,9 @@ from flask import Blueprint, render_template, redirect, url_for, flash, session
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField
 from wtforms.validators import DataRequired, Length
+from App.models.database import db, Korisnik
+from werkzeug.security import check_password_hash
 import os
-
 
 template_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'templates'))
 static_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'static'))
@@ -20,12 +21,17 @@ def login():
     if form.validate_on_submit():
         username = form.username.data
         password = form.password.data
-        if username == 'admin' and password == 'admin':
-            session['user'] = username
+        
+      
+        korisnik = Korisnik.query.filter_by(username=username).first()
+        
+        if korisnik and check_password_hash(korisnik.password, password):
+            session['user'] = korisnik.username
             flash('Login successful!', 'success')
             return redirect(url_for('login_bp.dashboard'))
         else:
             flash('Invalid username or password', 'danger')
+    
     return render_template('login.html', form=form)
 
 @login_bp.route('/dashboard')
