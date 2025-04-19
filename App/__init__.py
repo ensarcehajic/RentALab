@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from App.models.database import db, Korisnik
+from App.models.database import db, User
 from werkzeug.security import generate_password_hash
 
 def create_app():
@@ -11,19 +11,16 @@ def create_app():
 
     db.init_app(app)
 
-
     with app.app_context():
         db.create_all()
 
-      
-        korisnici = [
-            {'email': 'admin@example.com', 'username': 'admin', 'password': 'admin123', 'uloga': 'admin'},
-            {'email': 'laborant@example.com', 'username': 'laborant', 'password': 'lab123', 'uloga': 'laborant'},
-            {'email': 'student@example.com', 'username': 'student', 'password': 'student123', 'uloga': 'student'}
+        users = [
+            {'email': 'admin@example.com', 'username': 'admin', 'password': 'admin123', 'role': 'admin'},
+            {'email': 'laborant@example.com', 'username': 'laborant', 'password': 'laborant123', 'role': 'laborant'},
+            {'email': 'student@example.com', 'username': 'student', 'password': 'student123', 'role': 'student'}
         ]
         
-       
-        dodaj_korisnike(korisnici)
+        add_users(users)
 
     from .routes.login import login_bp
     app.register_blueprint(login_bp)
@@ -31,17 +28,17 @@ def create_app():
     return app
 
 
-def dodaj_korisnike(korisnici):
-    for korisnik in korisnici:
-        postojeci = Korisnik.query.filter_by(username=korisnik['username']).first()
-        if not postojeci:
-            novi_korisnik = Korisnik(
-                email=korisnik['email'],
-                username=korisnik['username'],
-                password=generate_password_hash(korisnik['password']),
-                uloga=korisnik['uloga']
+def add_users(users):
+    for user in users:
+        existing_user = User.query.filter_by(username=user['username']).first()
+        if not existing_user:
+            new_user = User(
+                email=user['email'],
+                username=user['username'],
+                password=generate_password_hash(user['password']),
+                role=user['role']
             )
-            db.session.add(novi_korisnik)
+            db.session.add(new_user)
 
     db.session.commit()
-    print("Korisnici uspješno ubačeni (ako već nisu postojali).")
+    print("Users successfully added (if they didn't already exist).")
