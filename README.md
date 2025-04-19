@@ -13,7 +13,6 @@ Projekat za iznajmljivanje laboratorijske opreme na Fakultetu elektrotehnike u T
 - **Messenger**
 - **Google Meet**
 
-**TRENUTNO SE APLIKAICJA NALAZI U full_stack_testing BRANCHU!**
 
 ## Set-up
 
@@ -33,18 +32,34 @@ source venv/bin/activate
 ```bash
 pip install -r requirements.txt
 ```
+4. Instaliraj PostgreSQL:
+```bash
+sudo apt install postgresql postgresql-contrib
+```
+5. Pokreni PostgreSQL:
+```bash
+sudo systemctl start postgresql
+sudo systemctl enable postgresql
+sudo -i -u postgres
+psql
+```
+6. Postavljanje podataka o bazi(ako se ne postave ovi isti podaci, potrebno je ažurirat link baze):
+```bash
+CREATE USER admin WITH PASSWORD '1234';
+CREATE DATABASE rentalab OWNER admin;
+GRANT ALL PRIVILEGES ON DATABASE rentalab TO admin;
+```
 
-4. Pokreni aplikaciju:
+7. Pokreni aplikaciju:
 ```bash
 python app.py
 ```
 
 ## Funkcionalnosti
 
--  **Login sistem** s ulogama:  (trenutno se validacija vrši u samom pythonu i samo username: admin password: admin mogu ući, autentifikacija preko baze je u izradi)
+-  **Login sistem** s ulogama:
   - **Student**: može pregledati i zatražiti opremu  
-  - **Laborant**: vidjeti zahtjeve i detalje o korisnicima
-
+  - **Laborant**: vidjeti zahtjeve, odobriti iste i detalje o korisnicima
 - **Baza podataka** (PostgreSQL) sa tabelom `users`  
 - **Zahtjevi za inajmljivanje** sa vremenskim ograničenjem (u planu)
 - **Admin dashboard** (u planu)
@@ -57,7 +72,7 @@ python app.py
 | Login sistem                | ✅ Završeno |
 | Frontend dizajn             | ✅ Završeno |
 | Razvoj baze za login        | ✅ Završeno |
-| Autentifikacija iz baze     | ⏳ U razvoju |
+| Autentifikacija iz baze     | ✅ Završeno  |
 | Prikaz dostupne opreme      | 🔜 Planirano |
 | Rezervacija opreme          | 🔜 Planirano |
 | Admin panel za laboranta    | 🔜 Planirano |
