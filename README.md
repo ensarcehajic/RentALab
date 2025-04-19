@@ -49,10 +49,14 @@ CREATE USER admin WITH PASSWORD '1234';
 CREATE DATABASE rentalab OWNER admin;
 GRANT ALL PRIVILEGES ON DATABASE rentalab TO admin;
 ```
-
-7. Pokreni aplikaciju:
+7. Prebaci na rentalab bazu podatka:
 ```bash
-python app.py
+\c rentalab
+```
+
+8. Pokreni aplikaciju:
+```bash
+python run.py
 ```
 
 ## Funkcionalnosti
@@ -61,7 +65,7 @@ python app.py
   - **Student**: može pregledati i zatražiti opremu  
   - **Laborant**: vidjeti zahtjeve, odobriti iste i detalje o korisnicima
 - **Baza podataka** (PostgreSQL) sa tabelom `users`  
-- **Zahtjevi za inajmljivanje** sa vremenskim ograničenjem (u planu)
+- **Zahtjevi za iznajmljivanje** sa vremenskim ograničenjem (u planu)
 - **Admin dashboard** (u planu)
 
 
