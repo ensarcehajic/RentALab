@@ -39,7 +39,7 @@ def dashboard():
         flash("You must be logged in to view this page.", 'danger')
         return redirect(url_for('login_bp.login'))
     username = session['user']
-    return f"<h1>Welcome to the Dashboard, {username}!</h1>"
+    return render_template('dashboard.html')
 
 @login_bp.route('/logout')
 def logout():

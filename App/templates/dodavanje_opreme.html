@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+    <head>
+
+    </head>
+    <body>
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            <p>{{ form.naziv.label }}{{ form.naziv(size=30) }}</p>
+            <p>{{ form.kolicina.label }}{{ form.kolicina() }}</p>
+            <p>{{ form.submit() }}</p>
+        </form>
+    </body>
+</html>

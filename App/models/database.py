@@ -9,3 +9,8 @@ class User(db.Model):
     username = db.Column(db.String(50), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
     role = db.Column(db.String(20), nullable=False)
+
+class Oprema(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    naziv = db.Column(db.String(100), nullable=False)
+    kolicina = db.Column(db.Integer, nullable=False)

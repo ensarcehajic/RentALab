@@ -25,6 +25,9 @@ def create_app():
     from .routes.login import login_bp
     app.register_blueprint(login_bp)
 
+    from .routes.equipment import equipment_bp
+    app.register_blueprint(equipment_bp)
+
     return app
 
 
