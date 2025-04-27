@@ -25,7 +25,8 @@ def login():
         user = User.query.filter_by(username=username).first()
         
         if user and check_password_hash(user.password, password):
-            session['user'] = user.username 
+            session['user'] = user.username
+            session['role'] = user.role
             flash('Login successful!', 'success')
             return redirect(url_for('login_bp.dashboard'))
         else:
@@ -39,7 +40,8 @@ def dashboard():
         flash("You must be logged in to view this page.", 'danger')
         return redirect(url_for('login_bp.login'))
     username = session['user']
-    return render_template('dashboard.html')
+    role = session.get('role')
+    return render_template('dashboard.html',username=username, role=role)
 
 @login_bp.route('/logout')
 def logout():
