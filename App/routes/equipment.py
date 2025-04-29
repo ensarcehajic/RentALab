@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField
 from wtforms.validators import DataRequired, NumberRange
-import os
+import os, csv, psycopg2
 
 template_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'templates'))
 static_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'static'))
@@ -14,7 +14,7 @@ equipment_bp = Blueprint('equipment_bp', __name__, template_folder=template_dir,
 class OpremaForm(FlaskForm):
     naziv = StringField("Naziv opreme", validators=[DataRequired()])
     kolicina = IntegerField("Kolicina", validators=[DataRequired(), NumberRange(min=1)])
-    submit = SubmitField("Dodaj opremu")
+    submit = SubmitField("Dodaj")
 
 @equipment_bp.route("/dodaj", methods=['GET', 'POST'])
 def dodaj_opremu():
@@ -24,4 +24,24 @@ def dodaj_opremu():
         db.session.add(novi_unos)
         db.session.commit()
         return redirect(url_for('login_bp.dashboard'))
+    elif 'file' in request.files:
+        file = request.files['file']
+        if file.filename.endswith('.csv'):
+            file.stream.seek(0)
+            csv_file = csv.reader(file.stream.read().decode('utf-8').splitlines())
+            next(csv_file)
+
+            conn = psycopg2.connect(dbname="rentalab", user="admin", password="1234", host="localhost")
+            cur = conn.cursor()
+
+            for row in csv_file:    
+                id, naziv, kolicina = row
+                cur.execute(
+                    "INSERT INTO oprema(id, naziv, kolicina) VALUES (%s, %s, %s)",(id, naziv, kolicina)
+            )
+            conn.commit()
+            cur.close()
+            conn.close()
+            return redirect(url_for('login_bp.dashboard'))
+
     return render_template("dodavanje_opreme.html", form=form)
