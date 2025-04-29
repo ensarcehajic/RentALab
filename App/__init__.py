@@ -42,6 +42,5 @@ def add_users(users):
                 role=user['role']
             )
             db.session.add(new_user)
-
     db.session.commit()
     print("Users successfully added (if they didn't already exist).")

@@ -17,6 +17,8 @@ class LoginForm(FlaskForm):
 
 @login_bp.route('/login', methods=['GET', 'POST'])
 def login():
+    if (session.get('user')):
+        return redirect(url_for('login_bp.logout'))
     form = LoginForm()
     if form.validate_on_submit():
         username = form.username.data
