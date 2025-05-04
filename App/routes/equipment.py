@@ -6,7 +6,7 @@ from wtforms import StringField, IntegerField, SubmitField
 from wtforms.validators import DataRequired, NumberRange,InputRequired
 from sqlalchemy import func
 import os
-import csv
+import csv,psycopg2
 from io import StringIO
 
 template_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'templates'))
@@ -66,21 +66,61 @@ def pregledaj_opremu():
         odabrana_kategorija=odabrana_kategorija,
         search=search
     )
-
 @equipment_bp.route("/dodaj", methods=['GET', 'POST'])
 def dodaj_opremu():
     if 'user' not in session:
         return redirect(url_for('login_bp.login'))
-    if (session.get('role') not in ['admin','laborant']):
+
+    if session.get('role') not in ['admin', 'laborant']:
         return redirect(url_for('login_bp.dashboard'))
+
     form = OpremaForm()
+
     if form.validate_on_submit():
-        postojeca_oprema = Oprema.query.filter(func.lower(Oprema.naziv) == form.naziv.data.lower()).first()
+        # Forma je validna - unos kroz formu
+        postojeca_oprema = Oprema.query.filter(
+            func.lower(Oprema.naziv) == form.naziv.data.lower()
+        ).first()
+
         if postojeca_oprema:
             postojeca_oprema.kolicina += form.kolicina.data
         else:
-            novi_unos = Oprema(naziv=form.naziv.data, kolicina=form.kolicina.data, kategorija=form.kategorija.data)
+            novi_unos = Oprema(
+                naziv=form.naziv.data,
+                kolicina=form.kolicina.data,
+                kategorija=form.kategorija.data
+            )
             db.session.add(novi_unos)
+
         db.session.commit()
         return redirect(url_for('login_bp.dashboard'))
+
+    # Ako nije forma validna, ali ima uploadovan fajl
+    if request.method == 'POST' and 'file' in request.files:
+        file = request.files['file']
+        if file and file.filename.endswith('.csv'):
+            file.stream.seek(0)
+            csv_file = csv.reader(file.stream.read().decode('utf-8').splitlines())
+            next(csv_file)  # preskoči header
+
+            conn = psycopg2.connect(
+                dbname="rentalab", user="admin", password="1234", host="localhost"
+            )
+            cur = conn.cursor()
+
+            for row in csv_file:
+                naziv, kolicina, kategorija = row
+                cur.execute(
+                    "INSERT INTO oprema(naziv, kolicina, kategorija) VALUES (%s, %s, %s)",
+                    (naziv, kolicina, kategorija)
+                )
+
+            conn.commit()
+            cur.close()
+            conn.close()
+            return redirect(url_for('login_bp.dashboard'))
+
     return render_template("dodavanje_opreme.html", form=form)
+@equipment_bp.route('/dashboard')
+def back_to_dashboard():
+    return render_template("dashboard.html")
