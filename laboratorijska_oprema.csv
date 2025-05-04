@@ -1,0 +1,17 @@
+id,naziv,kolicina,kategorija
+1,Osciloskop,10,Digitalni instrument
+2,Multimetar,15,Analogni instrument
+3,Signalni generator,10,Digitalni instrument
+4,Power Supply,10,Napajanja
+5,Lemilica,2,Alati
+6,Matador ploca,15,Pomocna oprema
+7,Otpornici (razni),100,Komponente
+8,Kondenzatori (razni),50,Komponente
+9,Kratkospojnici,100,Pomocna oprema
+10,Raspberry Pi,4,MCU
+11,Arduino,5,MCU
+12,Spectrum Analyzer,6,Digitalni instrument
+13,Multimetar,20,Digitalni instrument
+14,Spectrum Analyzer,3,Analogni instrument
+15,Diode Ispravlja?ke,200,Komponente
+16,Diode LED,50,Komponente
