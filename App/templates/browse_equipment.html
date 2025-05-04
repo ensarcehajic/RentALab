@@ -6,8 +6,11 @@
 {% endblock %}
 
 {% block content %}
+<br>
+<br>
+<b>
 <h1>Lista opreme</h1>
-
+</b>
 <form method="get" action="{{ url_for('equipment_bp.pregledaj_opremu') }}" style="text-align:center; margin-bottom: 20px;">
     <input type="text" name="search" placeholder="Pretraži po nazivu..." value="{{ search }}" style="padding: 8px; width: 250px;">
     
@@ -56,7 +59,7 @@
 {% if role in ['admin', 'laborant'] %}
 <div style="text-align: center; margin-bottom: 20px;">
     <a href="{{ url_for('equipment_bp.download_csv') }}">
-        <button class="iznajmi-dugme">Preuzmi CSV</button>
+        <button class="iznajmi-dugme">Preuzmi CSV opreme</button>
     </a>
 </div>
 {% endif %}

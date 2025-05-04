@@ -77,7 +77,7 @@ def dodaj_opremu():
     form = OpremaForm()
 
     if form.validate_on_submit():
-        # Forma je validna - unos kroz formu
+        
         postojeca_oprema = Oprema.query.filter(
             func.lower(Oprema.naziv) == form.naziv.data.lower()
         ).first()
@@ -95,13 +95,13 @@ def dodaj_opremu():
         db.session.commit()
         return redirect(url_for('login_bp.dashboard'))
 
-    # Ako nije forma validna, ali ima uploadovan fajl
+    
     if request.method == 'POST' and 'file' in request.files:
         file = request.files['file']
         if file and file.filename.endswith('.csv'):
             file.stream.seek(0)
             csv_file = csv.reader(file.stream.read().decode('utf-8').splitlines())
-            next(csv_file)  # preskoči header
+            next(csv_file)  
 
             conn = psycopg2.connect(
                 dbname="rentalab", user="admin", password="1234", host="localhost"
@@ -109,11 +109,23 @@ def dodaj_opremu():
             cur = conn.cursor()
 
             for row in csv_file:
-                naziv, kolicina, kategorija = row
-                cur.execute(
-                    "INSERT INTO oprema(naziv, kolicina, kategorija) VALUES (%s, %s, %s)",
-                    (naziv, kolicina, kategorija)
-                )
+                try:
+                    naziv, kolicina, kategorija = row
+                except ValueError:
+                    continue  # preskoči nevažeće redove
+
+                cur.execute("SELECT id, kolicina FROM oprema WHERE LOWER(naziv) = LOWER(%s)", (naziv,))
+                existing = cur.fetchone()
+
+                if existing:
+                    nova_kolicina = existing[1] + int(kolicina)
+                    cur.execute("UPDATE oprema SET kolicina = %s WHERE id = %s", (nova_kolicina, existing[0]))
+                else:
+                    cur.execute(
+                        "INSERT INTO oprema(naziv, kolicina, kategorija) VALUES (%s, %s, %s)",
+                        (naziv, kolicina, kategorija)
+                    )
+
 
             conn.commit()
             cur.close()
