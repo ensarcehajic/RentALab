@@ -14,3 +14,4 @@ class Oprema(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     naziv = db.Column(db.String(100), nullable=False)
     kolicina = db.Column(db.Integer, nullable=False)
+    kategorija = db.Column(db.String(100), nullable=False)

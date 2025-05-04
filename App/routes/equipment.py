@@ -14,16 +14,20 @@ equipment_bp = Blueprint('equipment_bp', __name__, template_folder=template_dir,
 class OpremaForm(FlaskForm):
     naziv = StringField("Naziv opreme", validators=[DataRequired()])
     kolicina = IntegerField("Kolicina", validators=[DataRequired(), NumberRange(min=1)])
+    kategorija = StringField("Kategorija", validators=[DataRequired()])
     submit = SubmitField("Dodaj")
 
 @equipment_bp.route("/dodaj", methods=['GET', 'POST'])
 def dodaj_opremu():
     form = OpremaForm()
     if form.validate_on_submit():
-        novi_unos = Oprema(naziv=form.naziv.data, kolicina=form.kolicina.data)
+        novi_unos = Oprema(
+            naziv=form.naziv.data, 
+            kolicina=form.kolicina.data, 
+            kategorija=form.kategorija.data
+        )
         db.session.add(novi_unos)
         db.session.commit()
-        return redirect(url_for('login_bp.dashboard'))
     elif 'file' in request.files:
         file = request.files['file']
         if file.filename.endswith('.csv'):
@@ -35,13 +39,16 @@ def dodaj_opremu():
             cur = conn.cursor()
 
             for row in csv_file:    
-                id, naziv, kolicina = row
+                naziv, kolicina, kategorija = row
                 cur.execute(
-                    "INSERT INTO oprema(id, naziv, kolicina) VALUES (%s, %s, %s)",(id, naziv, kolicina)
+                    "INSERT INTO oprema(naziv, kolicina, kategorija) VALUES (%s, %s, %s)",
+                    (naziv, kolicina, kategorija)
             )
             conn.commit()
             cur.close()
             conn.close()
-            return redirect(url_for('login_bp.dashboard'))
 
     return render_template("dodavanje_opreme.html", form=form)
+@equipment_bp.route('/dashboard')
+def back_to_dashboard():
+    return render_template("dashboard.html")
