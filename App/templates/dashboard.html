@@ -1,14 +1,14 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Dashboard</title>
-    </head>
-    <body>
-        <h1>Dobro došli {{username | upper}}</h1>
-        {%if role == 'admin' or role == 'laborant'%}
-            <a href="{{url_for('equipment_bp.dodaj_opremu')}}"><button>Dodaj opremu</button></a> <br>
-        {% endif %}
-        <a href="{{url_for('equipment_bp.pregledaj_opremu')}}"><button>Pretraži opremu</button></a><br>
-        <a href="{{url_for('login_bp.logout')}}"><button>Log out</button></a>
-    </body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+    <h1>Dobro došli {{ username | upper }}</h1>
+
+    {% if role == 'admin' or role == 'laborant' %}
+        <a href="{{ url_for('equipment_bp.dodaj_opremu') }}"><button>Dodaj opremu</button></a><br>
+    {% endif %}
+
+    <a href="{{ url_for('equipment_bp.pregledaj_opremu') }}"><button>Pretraži opremu</button></a><br>
+    <a href="{{ url_for('login_bp.logout') }}"><button>Log out</button></a>
+{% endblock %}
