@@ -1,22 +1,33 @@
-<!DOCTYPE html>
-<html>
-    <head>
+{% extends "base.html" %}
 
-    </head>
-    <body>
-        <a href="{{url_for('equipment_bp.back_to_dashboard')}}"><button>Vrati se na dashboard</button></a>
-        <h1>Unesi podatke o opremi:</h1>
-        <form method="POST">
-            {{ form.hidden_tag() }}
-            <p>{{ form.naziv.label }}{{ form.naziv(size=30) }}</p>
-            <p>{{ form.kolicina.label }}{{ form.kolicina() }}</p>
-            <p>{{ form.kategorija.label }}{{ form.kategorija() }}</p>
-            <p>{{ form.submit() }}</p>
-        </form>
-        <h1>Dodaj opremu preko CSV-a</h1>
-        <form method="POST" enctype="multipart/form-data">
-            <input type="file" name="file" accept=".csv" required>
-            <button type="submit">Dodaj</button>
-        </form>
-    </body>
-</html>
+{% block title %}Oprema Form{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/add_eq.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="left"></div>
+    <div class="center">
+        <div class="center-content">
+            <img src="/static/images/logo.png" alt="Logo" class="logo">
+            <h1>Unesi podatke o opremi:</h1>
+            <form method="POST">
+                {{ form.hidden_tag() }}
+                <p>{{ form.naziv.label }}{{ form.naziv(size=30) }}</p>
+                <p>{{ form.kolicina.label }}{{ form.kolicina() }}</p>
+                <p>{{ form.kategorija.label }}{{ form.kategorija(size=30) }}</p>
+                <p>{{ form.submit() }}</p>
+            </form>
+
+            <h1>Dodaj opremu preko CSV-a</h1>
+            <form method="POST" enctype="multipart/form-data">
+                <input type="file" name="file" accept=".csv" required>
+                <button type="submit">Dodaj</button>
+            </form>
+        </div>
+    </div>
+    <div class="right"></div>
+</div>
+{% endblock %}

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="bs">
+  <head>
+    <meta charset="UTF-8">
+    <title>{% block title %}RentALab{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block styles %}{% endblock %}
+  </head>
+  <body>
+
+    <header class="header">
+      <div class="header-left">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="header-logo" />
+        <span class="site-name">RentALab</span>
+
+        {% if request.path != url_for('login_bp.dashboard') %}
+        <a href="{{ url_for('login_bp.dashboard') }}">
+          <button class="dashboard-button">Dashboard</button>
+        </a>
+        {% endif %}
+      </div>
+
+      <div class="header-right">
+        <a href="{{ url_for('login_bp.logout') }}">
+          <button class="logout-button">Log Out</button>
+        </a>
+
+        <img src="https://i.pravatar.cc/40" alt="User" class="user-avatar" />
+        <span class="user-name">{{ session.get('user', 'Gost') }}</span>
+      </div>
+    </header>
+
+    <main>
+      {% block content %}{% endblock %}
+    </main>
+
+  </body>
+</html>
