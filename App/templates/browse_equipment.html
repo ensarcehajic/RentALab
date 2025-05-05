@@ -41,8 +41,14 @@
             <td>{{ item.kategorija }}</td>
             <td>
                 {% if role in ['admin','laborant'] %}
-                    <button class="izmijeni" type="submit">Izmijeni</button>
-                    <button class="izbrisi" type="submit">Izbriši</button>
+                <a href="{{ url_for('equipment_bp.izmijeni_opremu', oprema_id=item.id) }}">
+                    <button class="izmijeni" type="button">Izmijeni</button>
+                </a>
+                
+                <form action="{{ url_for('equipment_bp.izbrisi_opremu', oprema_id=item.id) }}" method="post" style="display:inline;">
+                    <button class="izbrisi" type="submit" onclick="return confirm('Da li ste sigurni da želite izbrisati {{ item.naziv }}?')">Izbriši</button>
+                </form>
+                
                 {% else %}
                     {% if item.kolicina > 0 %}
                         <button class="iznajmi-dugme" type="submit">Iznajmi</button>
