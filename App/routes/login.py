@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, session
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import DataRequired, Length
+from wtforms.validators import DataRequired, Length, Email,Regexp
 from App.models.database import db, User
 from werkzeug.security import check_password_hash, generate_password_hash
 import os
@@ -16,10 +16,13 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired(), Length(min=5, max=50)])
 
 class RegisterForm(FlaskForm):
-    email = StringField('Email', validators=[DataRequired()])
-    username = StringField('Username', validators=[DataRequired(), Length(min=4, max=20)])
-    password = PasswordField('Password', validators=[DataRequired(), Length(min=5, max=50)])
-    role = StringField('Role', validators=[DataRequired()])
+    email = StringField('Email', validators=[
+        DataRequired(),
+        Email(),
+        Regexp(r'^[\w\.-]+@fet\.ba$', message="Email must be in @fet.ba domain.")
+    ])
+    username = StringField('Username', validators=[DataRequired(), Length(min=3, max=20)])
+    password = PasswordField('Password', validators=[DataRequired(), Length(min=6)])
     submit = SubmitField('Register')
 
 @login_bp.route('/login', methods=['GET', 'POST'])
@@ -47,25 +50,30 @@ def register():
         email = form.email.data
         username = form.username.data
         password = form.password.data
-        role = form.role.data
 
         existing_user = User.query.filter_by(username=username).first()
         if existing_user:
-            flash('Username already exist.', 'danger')
+            flash('Username already exists.', 'danger')
             return redirect(url_for('login_bp.register'))
-        
+
+        existing_email = User.query.filter_by(email=email).first()
+        if existing_email:
+            flash('Email already exists.', 'danger')
+            return redirect(url_for('login_bp.register'))
+
         new_user = User(
             email=email,
             username=username,
-            password=generate_password_hash(password)
-            role=role
+            password=generate_password_hash(password),
+            role="student"
         )
         db.session.add(new_user)
         db.session.commit()
-        flash('Registration succesful. Please login.', 'success')
+        flash('Registration successful. Please login.', 'success')
         return redirect(url_for('login_bp.login'))
-    
+
     return render_template('register.html', form=form)
+
 
 
 @login_bp.route('/dashboard')
