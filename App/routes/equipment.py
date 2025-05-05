@@ -147,28 +147,34 @@ def back_to_dashboard():
 
 @equipment_bp.route('/izmijeni/<int:oprema_id>', methods=['GET', 'POST'])
 def izmijeni_opremu(oprema_id):
-    if session.get('role') not in ['admin', 'laborant']:
+     if 'user' not in session:
+        return redirect(url_for('login_bp.login'))
+     
+     if session.get('role') not in ['admin', 'laborant']:
         return redirect(url_for('login_bp.dashboard'))
 
-    oprema = Oprema.query.get_or_404(oprema_id)
-    form = OpremaForm(obj=oprema)
+     oprema = Oprema.query.get_or_404(oprema_id)
+     form = OpremaForm(obj=oprema)
 
-    if form.validate_on_submit():
+     if form.validate_on_submit():
         oprema.naziv = form.naziv.data
         oprema.kolicina = form.kolicina.data
         oprema.kategorija = form.kategorija.data
         db.session.commit()
         return redirect(url_for('equipment_bp.pregledaj_opremu'))
 
-    return render_template('dodavanje_opreme.html', form=form, izmjena=True)
+     return render_template('dodavanje_opreme.html', form=form, izmjena=True)
 
 @equipment_bp.route('/izbrisi/<int:oprema_id>', methods=['POST'])
 def izbrisi_opremu(oprema_id):
-    if session.get('role') not in ['admin', 'laborant']:
+     if 'user' not in session:
+        return redirect(url_for('login_bp.login'))
+
+     if session.get('role') not in ['admin', 'laborant']:
         return redirect(url_for('login_bp.dashboard'))
 
-    oprema = Oprema.query.get_or_404(oprema_id)
-    db.session.delete(oprema)
-    db.session.commit()
-    return redirect(url_for('equipment_bp.pregledaj_opremu'))
+     oprema = Oprema.query.get_or_404(oprema_id)
+     db.session.delete(oprema)
+     db.session.commit()
+     return redirect(url_for('equipment_bp.pregledaj_opremu'))
 
