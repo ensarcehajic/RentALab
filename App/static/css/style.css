@@ -356,6 +356,10 @@ body {
     display: none;
   }
 
+  .site-name {
+    display: none;
+  }
+
   .right-side {
     order: -1;
     width: 100%;
@@ -409,6 +413,11 @@ body {
 
   button[type="submit"] {
     width: 90%;
+  }
+
+  .dashboard-button, .logout-button {
+    padding: 6px 10px;
+    font-size: 14px;
   }
 
   .dashboard-button, .logout-button {
