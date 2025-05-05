@@ -6,6 +6,7 @@ from wtforms import StringField, IntegerField, SubmitField
 from wtforms.validators import DataRequired, NumberRange,InputRequired
 from sqlalchemy import func
 import os
+from datetime import datetime
 import csv,psycopg2
 from io import StringIO
 
@@ -20,6 +21,7 @@ class OpremaForm(FlaskForm):
     kategorija = StringField("Kategorija", validators=[DataRequired()])
     submit = SubmitField("Dodaj opremu")
 
+
 @equipment_bp.route('/download-csv')
 def download_csv():
     if session.get('role') not in ['admin', 'laborant']:
@@ -33,10 +35,15 @@ def download_csv():
     for item in oprema:
         writer.writerow([item.naziv, item.kolicina, item.kategorija])
 
+    # Generisanje trenutnog datuma i vremena
+    now = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')  # Format: YYYY-MM-DD_HH-MM-SS
+    filename = f'oprema_{now}.csv'  # Dodavanje datuma i vremena u naziv fajla
+
     response = make_response(si.getvalue())
-    response.headers['Content-Disposition'] = 'attachment; filename=oprema.csv'
+    response.headers['Content-Disposition'] = f'attachment; filename={filename}'
     response.headers['Content-type'] = 'text/csv'
     return response
+
 
 @equipment_bp.route('/browse')
 def pregledaj_opremu():
@@ -112,7 +119,7 @@ def dodaj_opremu():
                 try:
                     naziv, kolicina, kategorija = row
                 except ValueError:
-                    continue  # preskoči nevažeće redove
+                    continue  
 
                 cur.execute("SELECT id, kolicina FROM oprema WHERE LOWER(naziv) = LOWER(%s)", (naziv,))
                 existing = cur.fetchone()
