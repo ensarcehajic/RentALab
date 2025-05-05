@@ -1,9 +1,9 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, session
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField
+from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Length
 from App.models.database import db, User
-from werkzeug.security import check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 import os
 
 template_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'templates'))
@@ -14,6 +14,13 @@ login_bp = Blueprint('login_bp', __name__, template_folder=template_dir, static_
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(), Length(min=4, max=20)])
     password = PasswordField('Password', validators=[DataRequired(), Length(min=5, max=50)])
+
+class RegisterForm(FlaskForm):
+    email = StringField('Email', validators=[DataRequired()])
+    username = StringField('Username', validators=[DataRequired(), Length(min=4, max=20)])
+    password = PasswordField('Password', validators=[DataRequired(), Length(min=5, max=50)])
+    role = StringField('Role', validators=[DataRequired()])
+    submit = SubmitField('Register')
 
 @login_bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -32,6 +39,33 @@ def login():
             flash('Invalid username or password', 'danger')
     
     return render_template('login.html', form=form)
+
+@login_bp.route('/register', methods=['GET', 'POST'])
+def register():
+    form = RegisterForm()
+    if form.validate_on_submit():
+        email = form.email.data
+        username = form.username.data
+        password = form.password.data
+        role = form.role.data
+
+        existing_user = User.query.filter_by(username=username).first()
+        if existing_user:
+            flash('Username already exist.', 'danger')
+            return redirect(url_for('login_bp.register'))
+        
+        new_user = User(
+            email=email,
+            username=username,
+            password=generate_password_hash(password)
+            role=role
+        )
+        db.session.add(new_user)
+        db.session.commit()
+        flash('Registration succesful. Please login.', 'success')
+        return redirect(url_for('login_bp.login'))
+    
+    return render_template('register.html', form=form)
 
 @login_bp.route('/dashboard')
 def dashboard():
