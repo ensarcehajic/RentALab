@@ -67,6 +67,7 @@ def register():
     
     return render_template('register.html', form=form)
 
+
 @login_bp.route('/dashboard')
 def dashboard():
     if 'user' not in session:
