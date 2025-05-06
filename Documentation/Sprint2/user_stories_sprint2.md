@@ -39,3 +39,15 @@ Ovdje su definisane ključne korisničke priče (user stories) za Sprint 2, napi
 - Klikom na stavku "Pregled opreme" u dashboardu, korisnik se preusmjerava na stranicu s listom opreme
 - Stranica prikazuje tabelu sa svom dostupnom opremom (naziv, količina).
 - Postoji opcija koja generiše CSV fajl sa trenutnim prikazom tabele.
+
+---
+
+## User Story 4: Implementacija main dashboard-a
+**Opis:**
+*Kao korisnik sistema želim da imam jasan i funkcionalan glavni dashboard kako bih brzo pristupio svim ključnim funkcijama i imao pregled osnovnih informacija.*
+
+### Prihvatni kriteriji:
+- Dashboard prikazuje kartice ili dugmad za sve glavne funkcije (npr. Dodavanje opreme, Pregled opreme, Statistika)
+- Svaka opcija vodi na odgovarajuću stranicu prilikom klika
+
+
