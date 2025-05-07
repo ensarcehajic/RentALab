@@ -63,10 +63,10 @@ python run.py
 
 -  **Login sistem** s ulogama:
   - **Student**: može pregledati i zatražiti opremu  
-  - **Laborant**: vidjeti zahtjeve, odobriti iste i detalje o korisnicima
-- **Baza podataka** (PostgreSQL) sa tabelom `users`  
+  - **Laborant**: vidjeti zahtjeve, odobriti iste i detalje o korisnicima (u planu)
+- **Baza podataka** (PostgreSQL) sa tabelom `users` i `oprema`
 - **Zahtjevi za iznajmljivanje** sa vremenskim ograničenjem (u planu)
-- **Admin dashboard** (u planu)
+- **Admin dashboard** 
 
 
 ## Status implementacije
@@ -74,10 +74,13 @@ python run.py
 | Funkcionalnost               | Status      |
 |-----------------------------|-------------|
 | Login sistem                | ✅ Završeno |
+| Register sistem             | ✅ Završeno |
 | Frontend dizajn             | ✅ Završeno |
 | Razvoj baze za login        | ✅ Završeno |
-| Autentifikacija iz baze     | ✅ Završeno  |
-| Prikaz dostupne opreme      | 🔜 Planirano |
+| Autentifikacija iz baze     | ✅ Završeno |
+| Prikaz dostupne opreme      | ✅ Završeno |
+| Filtriranje dostupne opreme | ✅ Završeno |
+| Preuzimanje .csv opreme     | ✅ Završeno |
 | Rezervacija opreme          | 🔜 Planirano |
 | Admin panel za laboranta    | 🔜 Planirano |
 
