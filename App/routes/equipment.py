@@ -24,6 +24,9 @@ class OpremaForm(FlaskForm):
 
 @equipment_bp.route('/download-csv')
 def download_csv():
+    if 'user' not in session:
+        return redirect(url_for('login_bp.login'))
+
     if session.get('role') not in ['admin', 'laborant']:
         return redirect(url_for('login_bp.dashboard'))
 
@@ -35,9 +38,9 @@ def download_csv():
     for item in oprema:
         writer.writerow([item.naziv, item.kolicina, item.kategorija])
 
-    # Generisanje trenutnog datuma i vremena
-    now = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')  # Format: YYYY-MM-DD_HH-MM-SS
-    filename = f'oprema_{now}.csv'  # Dodavanje datuma i vremena u naziv fajla
+    
+    now = datetime.now().strftime('%Y-%m-%d_%H-%M-%S') 
+    filename = f'oprema_{now}.csv' 
 
     response = make_response(si.getvalue())
     response.headers['Content-Disposition'] = f'attachment; filename={filename}'
