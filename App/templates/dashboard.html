@@ -18,6 +18,16 @@
       <img src="{{ url_for('static', filename='images/plus.png') }}" alt="New Inquiry Icon" />
       <h2>NEW INQUIRY</h2>
     </a>
+
+    <div class="right-cards">
+      <a href="{{ url_for('equipment_bp.pregledaj_opremu') }}" class="card">
+        <img src="{{ url_for('static', filename='images/assets.png') }}" alt="Available Assets" />
+        <div>
+          <h3>AVAILABLE ASSETS</h3>
+          <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry...</p>
+        </div>
+      </a>
+
     <a href="" class="card">
         <img src="{{ url_for('static', filename='images/report.png') }}" alt="Currently Rented" />
         <div>
@@ -25,6 +35,7 @@
           <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry...</p>
         </div>
       </a>
+      
       <a href="{{ url_for('equipment_bp.download_csv') }}" class="card">
         <img src="{{ url_for('static', filename='images/report2.png') }}" alt="Quick Report" />
         <div>
@@ -33,14 +44,7 @@
         </div>
       </a>
     {% endif %}
-    <div class="right-cards">
-        <a href="{{ url_for('equipment_bp.pregledaj_opremu') }}" class="card">
-          <img src="{{ url_for('static', filename='images/assets.png') }}" alt="Available Assets" />
-          <div>
-            <h3>AVAILABLE ASSETS</h3>
-            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry...</p>
-          </div>
-        </a>
+
       </div>
     </div>
    
