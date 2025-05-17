@@ -11,6 +11,7 @@ class User(db.Model):
     role = db.Column(db.String(20), nullable=False)
 
 class Oprema(db.Model):
+    __tablename__ = 'oprema'
     id = db.Column(db.Integer, primary_key=True)
     inventory_number = db.Column(db.String(100), nullable=False)
     name = db.Column(db.String(100), nullable=False)

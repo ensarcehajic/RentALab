@@ -3,16 +3,14 @@
 {% block title %}Oprema Form{% endblock %}
 
 {% block styles %}
-<!--<link rel="stylesheet" href="{{ url_for('static', filename='css/add_eq.css') }}">-->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/add_eq.css') }}">
 {% endblock %}
 
 {% block content %}
 <div class="container">
-    <div class="left"></div>
-    <div class="center">
         <div class="center-content">
             <img src="/static/images/logo.png" alt="Logo" class="logo">
-            <h1>Unesi podatke o opremi:</h1>
+            <h1>Dodavanje opreme</h1>
             <form method="POST">
                 {{ form.hidden_tag() }}
                 <p>{{ form.inventory_number.label }}{{ form.inventory_number(size=30) }}</p>
@@ -41,7 +39,5 @@
                 <button type="submit">Dodaj</button>
             </form>
         </div>
-    </div>
-    <div class="right"></div>
 </div>
 {% endblock %}

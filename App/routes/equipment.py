@@ -48,9 +48,17 @@ def download_csv():
 
     si = StringIO()
     writer = csv.writer(si)
-    writer.writerow(['Naziv', 'Količina', 'Kategorija'])
+    writer.writerow([
+        'inventory_number', 'name', 'description', 'serial_number', 'model_number', 'supplier', 'date_of_acquisition',
+        'warranty_until', 'purchase_value', 'project', 'service_period', 'next_service', 'labaratory_assistant',
+        'location', 'category', 'available', 'note'
+        ])
     for item in oprema:
-        writer.writerow([item.naziv, item.kolicina, item.kategorija])
+        writer.writerow([item.inventory_number, item.name, item.description, item.serial_number,
+        item.model_number, item.supplier, item.date_of_acquisition, item.warranty_until, item.purchase_value,
+        item.project, item.service_period, item.next_service, item.labaratory_assistant, item.location,
+        item.category, item.available, item.note
+        ])
 
     
     now = datetime.now().strftime('%Y-%m-%d_%H-%M-%S') 
@@ -140,21 +148,17 @@ def dodaj_opremu():
 
             for row in csv_file:
                 try:
-                    naziv, kolicina, kategorija = row
+                    inventory_number, name, description, serial_number, model_number, supplier, date_of_acquisition, warranty_until, purchase_value, project, service_period, next_service, labaratory_assistant, location, category, available, note = row
                 except ValueError:
                     continue  
 
                 cur.execute("SELECT id, kolicina FROM oprema WHERE LOWER(naziv) = LOWER(%s)", (naziv,))
                 existing = cur.fetchone()
 
-                if existing:
-                    nova_kolicina = existing[1] + int(kolicina)
-                    cur.execute("UPDATE oprema SET kolicina = %s WHERE id = %s", (nova_kolicina, existing[0]))
-                else:
-                    cur.execute(
-                        "INSERT INTO oprema(naziv, kolicina, kategorija) VALUES (%s, %s, %s)",
-                        (naziv, kolicina, kategorija)
-                    )
+                cur.execute(
+                    "INSERT INTO oprema(inventory_number, name, description, serial_number, model_number, supplier, date_of_acquisition, warranty_until, purchase_value, project, service_period, next_service, labaratory_assistant, location, category, available, note) VALUES (%s, %s, %s)",
+                    (inventory_number, name, description, serial_number, model_number, supplier, date_of_acquisition, warranty_until, purchase_value, project, service_period, next_service, labaratory_assistant, location, category, available, note)
+                )
 
 
             conn.commit()
