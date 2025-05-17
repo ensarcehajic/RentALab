@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 
 db = SQLAlchemy()
 
@@ -15,3 +16,15 @@ class Oprema(db.Model):
     naziv = db.Column(db.String(100), nullable=False)
     kolicina = db.Column(db.Integer, nullable=False)
     kategorija = db.Column(db.String(100), nullable=False)
+
+class Rented(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    equipment_id = db.Column(db.Integer, nullable=False)  # no ForeignKey yet
+    user_id = db.Column(db.Integer, nullable=False)       # no ForeignKey yet
+    labtech_id = db.Column(db.Integer, nullable=True)     # optional
+    profesor_id = db.Column(db.Integer, nullable=True)    # optional
+    start_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    end_date = db.Column(db.DateTime, nullable=True)
+    status = db.Column(db.String(20), nullable=False, default="pending")
+    note = db.Column(db.Text, nullable=True)
+

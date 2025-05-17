@@ -2,13 +2,15 @@ from App.models.database import db, Oprema
 from flask import Blueprint,Flask, render_template, render_template_string, request, redirect, url_for,session,make_response
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, SubmitField
-from wtforms.validators import DataRequired, NumberRange,InputRequired
+from wtforms import StringField, IntegerField, SubmitField, TextAreaField, SelectField, DateTimeField, DecimalField
+from wtforms.validators import DataRequired, NumberRange, InputRequired, Optional
+
 from sqlalchemy import func
 import os
 from datetime import datetime
 import csv,psycopg2
 from io import StringIO
+from datetime import datetime
 
 template_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'templates'))
 static_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'static'))
@@ -20,6 +22,65 @@ class OpremaForm(FlaskForm):
     kolicina = IntegerField("Kolicina", validators=[InputRequired(), NumberRange(min=0)])
     kategorija = StringField("Kategorija", validators=[DataRequired()])
     submit = SubmitField("Dodaj opremu")
+
+class RentedForm(FlaskForm):
+    # Personal Data (read-only)
+    labtech_id = IntegerField("ID laboratoranta", default=0, render_kw={'readonly': True})
+    labtech_name = StringField("Ime laboratoranta", default="")
+    
+    professor_id = IntegerField("ID profesora", default=0, render_kw={'readonly': True})
+    professor_name = StringField("Ime profesora", default="")
+    
+    student_id = IntegerField("ID studenta", default=0, render_kw={'readonly': True})
+    student_name = StringField("Ime studenta", default="")
+    student_telephone = StringField("Telefon studenta", default="", render_kw={'readonly': True})
+    student_address = StringField("Adresa studenta", default="", render_kw={'readonly': True})
+
+    # Equipment Data
+    inventory_number = StringField("Inventarski broj", default="", validators=[DataRequired()])  # editable
+    equipment_name = StringField("Naziv opreme", default="", validators=[DataRequired()], render_kw={'readonly': True})
+    description = TextAreaField("Opis opreme", default="", validators=[Optional()], render_kw={'readonly': True})
+    serial_number = StringField("Serijski broj", default="", validators=[Optional()], render_kw={'readonly': True})
+    model_number = StringField("Model broj", default="", validators=[Optional()], render_kw={'readonly': True})
+    provider = StringField("Proizvođač / Dobavljač", default="", validators=[Optional()], render_kw={'readonly': True})
+    
+    equipment_value = DecimalField("Vrijednost opreme (BAM)", places=2, default=None, validators=[Optional()], render_kw={'readonly': True})
+    project = StringField("Projekat", default="", validators=[Optional()])  # editable
+    serves_period = StringField("Period servisa", default="", validators=[Optional()], render_kw={'readonly': True})
+    next_servis = DateTimeField("Sljedeći servis", format="%Y-%m-%d", default=None, validators=[Optional()], render_kw={'readonly': True})
+    date_buy = DateTimeField("Datum kupovine", format="%Y-%m-%d", default=None, validators=[Optional()], render_kw={'readonly': True})
+    warranty_date = DateTimeField("Datum garancije", format="%Y-%m-%d", default=None, validators=[Optional()], render_kw={'readonly': True})
+
+    # Status and Notes
+    date_rent_start = DateTimeField("Datum početka iznajmljivanja", format="%Y-%m-%d %H:%M:%S", default=None, validators=[Optional()], render_kw={'readonly': True})
+    date_rent_end = DateTimeField("Datum završetka iznajmljivanja", format="%Y-%m-%d %H:%M:%S", default=None, validators=[Optional()], render_kw={'readonly': True})
+    
+    status = SelectField(
+        "Status",
+        choices=[
+            ("pending", "Na čekanju"),
+            ("approved", "Odobreno"),
+            ("ended", "Završeno"),
+            ("rejected", "Odbijeno")
+        ],
+        default="pending",
+        validators=[DataRequired()],
+        render_kw={'readonly': True}  # For SelectField, use disabled to prevent changes
+    )
+    
+    note = TextAreaField("Napomena", default="", validators=[Optional()])  # editable
+    submit = SubmitField("Pošalji")
+
+
+@equipment_bp.route('/rent')
+def rent():
+    if 'user' not in session:
+        return redirect(url_for('login_bp.login'))
+
+    # Optional role check here
+
+    form = RentedForm()
+    return render_template('Iznajmi_opremu.html', form=form)
 
 
 @equipment_bp.route('/download-csv')
