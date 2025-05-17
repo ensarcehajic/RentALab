@@ -2,7 +2,7 @@ from App.models.database import db, Oprema
 from flask import Blueprint,Flask, render_template, render_template_string, request, redirect, url_for,session,make_response
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, SubmitField
+from wtforms import StringField, IntegerField, SubmitField, DateField, SelectField
 from wtforms.validators import DataRequired, NumberRange,InputRequired
 from sqlalchemy import func
 import os
@@ -16,9 +16,23 @@ static_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'stat
 equipment_bp = Blueprint('equipment_bp', __name__, template_folder=template_dir, static_folder=static_dir)
 
 class OpremaForm(FlaskForm):
-    naziv = StringField("Naziv opreme", validators=[DataRequired()])
-    kolicina = IntegerField("Kolicina", validators=[InputRequired(), NumberRange(min=0)])
-    kategorija = StringField("Kategorija", validators=[DataRequired()])
+    inventory_number = StringField("Inventurni broj", validators=[DataRequired()])
+    name = StringField("Naziv", validators=[InputRequired()])
+    description = StringField("Opis", validators=[DataRequired()])
+    serial_number = StringField("Serijski broj", validators=[DataRequired()])
+    model_number = StringField("Model broj", validators=[DataRequired()])
+    supplier = StringField("Dobavljac", validators=[DataRequired()])
+    date_of_acquisition = DateField("Datum nabavke", format='%Y-%m-%d',validators=[DataRequired()])
+    warranty_until = DateField("Garancija do", validators=[DataRequired()])
+    purchase_value = IntegerField("Nabavna vrijednost", validators=[DataRequired(), NumberRange(min=1)])
+    project = StringField("Projekat", validators=[DataRequired()])
+    service_period = StringField("Servisni period", validators=[DataRequired()])
+    next_service = DateField("Naredni servis", validators=[DataRequired()])
+    labaratory_assistant = StringField("Sredstvo duzi", validators=[DataRequired()])
+    location = StringField("Lokacija", validators=[DataRequired()])
+    category = StringField("Kategorija", validators=[DataRequired()])
+    available = SelectField("Dostupno", choices=[('1', 'Da'),('0', 'Ne')])
+    note = StringField("Napomena", validators=[DataRequired()])
     submit = SubmitField("Dodaj opremu")
 
 
@@ -87,20 +101,26 @@ def dodaj_opremu():
     form = OpremaForm()
 
     if form.validate_on_submit():
-        
-        postojeca_oprema = Oprema.query.filter(
-            func.lower(Oprema.naziv) == form.naziv.data.lower()
-        ).first()
-
-        if postojeca_oprema:
-            postojeca_oprema.kolicina += form.kolicina.data
-        else:
-            novi_unos = Oprema(
-                naziv=form.naziv.data,
-                kolicina=form.kolicina.data,
-                kategorija=form.kategorija.data
-            )
-            db.session.add(novi_unos)
+        novi_unos = Oprema(
+            inventory_number=form.inventory_number.data,
+            name=form.name.data,
+            description=form.description.data,
+            serial_number=form.serial_number.data,
+            model_number=form.model_number.data,
+            supplier=form.supplier.data,
+            date_of_acquisition=form.date_of_acquisition.data,
+            warranty_until=form.warranty_until.data,
+            purchase_value=form.purchase_value.data,
+            project=form.project.data,
+            service_period=form.service_period.data,
+            next_service=form.next_service.data,
+            labaratory_assistant=form.labaratory_assistant.data,
+            location=form.location.data,
+            category=form.category.data,
+            available=form.available.data,
+            note=form.note.data,
+        )
+        db.session.add(novi_unos)
 
         db.session.commit()
         return redirect(url_for('login_bp.dashboard'))

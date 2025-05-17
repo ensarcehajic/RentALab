@@ -3,7 +3,7 @@
 {% block title %}Oprema Form{% endblock %}
 
 {% block styles %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/add_eq.css') }}">
+<!--<link rel="stylesheet" href="{{ url_for('static', filename='css/add_eq.css') }}">-->
 {% endblock %}
 
 {% block content %}
@@ -15,9 +15,23 @@
             <h1>Unesi podatke o opremi:</h1>
             <form method="POST">
                 {{ form.hidden_tag() }}
-                <p>{{ form.naziv.label }}{{ form.naziv(size=30) }}</p>
-                <p>{{ form.kolicina.label }}{{ form.kolicina() }}</p>
-                <p>{{ form.kategorija.label }}{{ form.kategorija(size=30) }}</p>
+                <p>{{ form.inventory_number.label }}{{ form.inventory_number(size=30) }}</p>
+                <p>{{ form.name.label }}{{ form.name(size=30) }}</p>
+                <p>{{ form.description.label }}{{ form.description(size=30) }}</p>
+                <p>{{ form.serial_number.label }}{{ form.serial_number(size=30) }}</p>
+                <p>{{ form.model_number.label }}{{ form.model_number(size=30) }}</p>
+                <p>{{ form.supplier.label }}{{ form.supplier(size=30) }}</p>
+                <p>{{ form.date_of_acquisition.label }}{{ form.date_of_acquisition(type="date") }}</p>
+                <p>{{ form.warranty_until.label }}{{ form.warranty_until(type="date") }}</p>
+                <p>{{ form.purchase_value.label }}{{ form.purchase_value(size=30) }}</p>
+                <p>{{ form.project.label }}{{ form.project(size=30) }}</p>
+                <p>{{ form.service_period.label }}{{ form.service_period(size=30) }}</p>
+                <p>{{ form.next_service.label }}{{ form.next_service(type="date") }}</p>
+                <p>{{ form.labaratory_assistant.label }}{{ form.labaratory_assistant(size=30) }}</p>
+                <p>{{ form.location.label }}{{ form.location(size=30) }}</p>
+                <p>{{ form.category.label }}{{ form.category(size=30) }}</p>
+                <p>{{ form.available.label }}{{ form.available() }}</p>
+                <p>{{ form.note.label }}{{ form.note(size=200) }}</p>
                 <p>{{ form.submit() }}</p>
             </form>
 
