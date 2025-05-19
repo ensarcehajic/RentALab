@@ -16,16 +16,31 @@
       <form class="login-form" method="POST" action="{{ url_for('login_bp.register') }}">
         {{ form.hidden_tag() }}
 
-        <label for="email">Email</label>
-        {{ form.email(id='email', class_='input-field', placeholder='Enter your email') }}
+        <label for="name">Name</label>
+        {{ form.name(id='name', class_='input-field', placeholder='Enter your name') }}
 
-        <label for="username">Username</label>
-        {{ form.username(id='username', class_='input-field', placeholder='Choose a username') }}
+        <label for="surname">Surname</label>
+        {{ form.surname(id='surname', class_='input-field', placeholder='Enter your surname') }}
+
+        <label for="email">Email</label>
+        {{ form.email(id='email', class_='input-field', placeholder='Enter your @fet.ba email') }}
+
+        <label for="address">Address</label>
+        {{ form.address(id='address', class_='input-field', placeholder='Enter your address') }}
+
+        <label for="city">City</label>
+        {{ form.city(id='city', class_='input-field', placeholder='Enter your city') }}
+
+        <label for="phone_number">Phone Number</label>
+        {{ form.phone_number(id='phone_number', class_='input-field', placeholder='Enter your phone number') }}
 
         <label for="password">Password</label>
         {{ form.password(id='password', class_='input-field', placeholder='Create a password') }}
 
-        <button type="submit">Register</button>
+        <label for="confirm_password">Confirm Password</label>
+        {{ form.confirm_password(id='confirm_password', class_='input-field', placeholder='Repeat your password') }}
+
+        {{ form.submit(class_='submit-button') }}
 
         <p class="register-text">Already have an account? <a href="{{ url_for('login_bp.login') }}">Login here</a></p>
       </form>

@@ -15,10 +15,38 @@ def create_app():
         db.create_all()
 
         users = [
-            {'email': 'admin@example.com', 'username': 'admin', 'password': 'admin123', 'role': 'admin'},
-            {'email': 'laborant@example.com', 'username': 'laborant', 'password': 'laborant123', 'role': 'laborant'},
-            {'email': 'student@example.com', 'username': 'student', 'password': 'student123', 'role': 'student'}
-        ]
+    {
+        'email': 'admin@example.com',
+        'name': 'Admin',
+        'surname': 'User',
+        'address': 'Admin Street 1',
+        'city': 'AdminCity',
+        'phone_number': '111-111',
+        'password': 'admin123',
+        'role': 'admin'
+    },
+    {
+        'email': 'laborant@example.com',
+        'name': 'Lab',
+        'surname': 'Tech',
+        'address': 'Lab Street 2',
+        'city': 'LabCity',
+        'phone_number': '222-222',
+        'password': 'laborant123',
+        'role': 'laborant'
+    },
+    {
+        'email': 'student@example.com',
+        'name': 'Student',
+        'surname': 'One',
+        'address': 'Student Ave 3',
+        'city': 'StudentCity',
+        'phone_number': '333-333',
+        'password': 'student123',
+        'role': 'student'
+    }
+]
+
         
         add_users(users)
 
@@ -33,14 +61,19 @@ def create_app():
 
 def add_users(users):
     for user in users:
-        existing_user = User.query.filter_by(username=user['username']).first()
+        existing_user = User.query.filter_by(email=user['email']).first()
         if not existing_user:
             new_user = User(
+                name=user['name'],
+                surname=user['surname'],
                 email=user['email'],
-                username=user['username'],
+                address=user['address'],
+                city=user['city'],
+                phone_number=user['phone_number'],
                 password=generate_password_hash(user['password']),
                 role=user['role']
             )
             db.session.add(new_user)
     db.session.commit()
     print("Users successfully added (if they didn't already exist).")
+

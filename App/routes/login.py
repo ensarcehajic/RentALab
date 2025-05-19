@@ -1,10 +1,17 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, session
+from flask import Blueprint, render_template, redirect, url_for, flash, session, get_flashed_messages
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import DataRequired, Length, Email,Regexp
+from wtforms.validators import DataRequired, Length, Email, Regexp, EqualTo
 from App.models.database import db, User
 from werkzeug.security import check_password_hash, generate_password_hash
 import os
+#import hashlib  #part of a code for user image
+
+#def get_gravatar_url(email, size=40):
+#    email = email.strip().lower().encode('utf-8')
+#    gravatar_hash = hashlib.md5(email).hexdigest()
+#    return f"https://www.gravatar.com/avatar/{gravatar_hash}?s={size}&d=identicon"
+#______part of a code for user image______
 
 template_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'templates'))
 static_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'static'))
@@ -12,63 +19,86 @@ static_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'stat
 login_bp = Blueprint('login_bp', __name__, template_folder=template_dir, static_folder=static_dir)
 
 class LoginForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired(), Length(min=4, max=20)])
-    password = PasswordField('Password', validators=[DataRequired(), Length(min=5, max=50)])
-
-class RegisterForm(FlaskForm):
     email = StringField('Email', validators=[
         DataRequired(),
         Email(),
         Regexp(r'^[\w\.-]+@fet\.ba$', message="Email must be in @fet.ba domain.")
     ])
-    username = StringField('Username', validators=[DataRequired(), Length(min=3, max=20)])
-    password = PasswordField('Password', validators=[DataRequired(), Length(min=6)])
+    password = PasswordField('Password', validators=[DataRequired(), Length(min=5, max=50)])
+    submit = SubmitField('Login')
+
+class RegisterForm(FlaskForm):
+    name = StringField('Name', validators=[DataRequired()])
+    surname = StringField('Surname', validators=[DataRequired()])
+    email = StringField('Email', validators=[
+        DataRequired(),
+        Email(),
+        Regexp(r'^[\w\.-]+@fet\.ba$', message="Email must be in @fet.ba domain.")
+    ])
+    address = StringField('Address', validators=[DataRequired()])
+    city = StringField('City', validators=[DataRequired()])
+    phone_number = StringField('Phone Number', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[
+        DataRequired(),
+        Length(min=6)
+    ])
+    confirm_password = PasswordField('Confirm Password', validators=[
+        DataRequired(),
+        EqualTo('password', message='Passwords must match')
+    ])
     submit = SubmitField('Register')
+
 
 @login_bp.route('/login', methods=['GET', 'POST'])
 def login():
-    if (session.get('user')):
-        return redirect(url_for('login_bp.logout'))
+    if session.get('user'):
+        flash('You are already logged in.', 'info')
+        return redirect(url_for('login_bp.dashboard'))
+
     form = LoginForm()
     if form.validate_on_submit():
-        username = form.username.data
+        email = form.email.data
         password = form.password.data
-        
-        user = User.query.filter_by(username=username).first()
-        
+
+        user = User.query.filter_by(email=email).first()
+
         if user and check_password_hash(user.password, password):
-            session['user'] = user.username
+            session['user'] = user.email
             session['role'] = user.role
             flash('Login successful!', 'success')
             return redirect(url_for('login_bp.dashboard'))
         else:
-            flash('Invalid username or password', 'danger')
-    
+            flash('Invalid email or password', 'danger')
+
     return render_template('login.html', form=form)
+
 
 @login_bp.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
     if form.validate_on_submit():
         email = form.email.data
-        username = form.username.data
+        name = form.name.data
+        surname = form.surname.data
+        address = form.address.data
+        city = form.city.data
+        phone_number = form.phone_number.data
         password = form.password.data
 
-        existing_user = User.query.filter_by(username=username).first()
+        existing_user = User.query.filter_by(email=email).first()
         if existing_user:
-            flash('Username already exists.', 'danger')
-            return redirect(url_for('login_bp.register'))
-
-        existing_email = User.query.filter_by(email=email).first()
-        if existing_email:
             flash('Email already exists.', 'danger')
             return redirect(url_for('login_bp.register'))
 
         new_user = User(
+            name=name,
+            surname=surname,
             email=email,
-            username=username,
+            address=address,
+            city=city,
+            phone_number=phone_number,
             password=generate_password_hash(password),
-            role="student"
+            role="student"  
         )
         db.session.add(new_user)
         db.session.commit()
@@ -87,10 +117,14 @@ def dashboard():
     username = session['user']
     role = session.get('role')
     return render_template('dashboard.html',username=username, role=role)
+    #gravatar_url = get_gravatar_url(session.get('user'))
+    #return render_template("dashboard.html", gravatar_url=gravatar_url)
+    #____part of a code for user image____
 
 @login_bp.route('/logout')
 def logout():
     session.pop('user', None)
+    get_flashed_messages()  # Ovo očisti stare poruke
     flash("You have been logged out.", 'info')
     return redirect(url_for('login_bp.login'))
 
