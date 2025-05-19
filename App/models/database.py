@@ -16,7 +16,24 @@ class User(db.Model):
     verified = db.Column(db.Boolean, default=False, nullable=False)
 
 class Oprema(db.Model):
+    __tablename__ = 'oprema'
     id = db.Column(db.Integer, primary_key=True)
-    naziv = db.Column(db.String(100), nullable=False)
-    kolicina = db.Column(db.Integer, nullable=False)
-    kategorija = db.Column(db.String(100), nullable=False)
+    inventory_number = db.Column(db.String(100), nullable=False)
+    name = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.String(100), nullable=False)
+    serial_number = db.Column(db.String(100), nullable=False)
+    model_number = db.Column(db.String(100), nullable=False)
+    supplier = db.Column(db.String(100), nullable=False)
+    date_of_acquisition = db.Column(db.Date, nullable=False)
+    warranty_until = db.Column(db.Date, nullable=False)
+    purchase_value = db.Column(db.Integer, nullable=False)
+    project = db.Column(db.String(100), nullable=False)
+    service_period = db.Column(db.String(100), nullable=False)
+    next_service = db.Column(db.Date, nullable=False)
+    labaratory_assistant = db.Column(db.String(100), nullable=False)
+    location = db.Column(db.String(100), nullable=False)
+    category = db.Column(db.String(100), nullable=False)
+    available = db.Column(db.Integer, nullable=False)
+    note = db.Column(db.String(500), nullable=False)
+    
+    
