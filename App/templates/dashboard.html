@@ -18,7 +18,7 @@
       <img src="{{ url_for('static', filename='images/plus.png') }}" alt="New Inquiry Icon" />
       <h2>NEW INQUIRY</h2>
     </a>
-
+    {% endif %}
     <div class="right-cards">
       <a href="{{ url_for('equipment_bp.pregledaj_opremu') }}" class="card">
         <img src="{{ url_for('static', filename='images/assets.png') }}" alt="Available Assets" />
@@ -27,7 +27,7 @@
           <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry...</p>
         </div>
       </a>
-
+     {% if role == 'admin' or role == 'laborant' %}
     <a href="" class="card">
         <img src="{{ url_for('static', filename='images/report.png') }}" alt="Currently Rented" />
         <div>
