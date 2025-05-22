@@ -1,7 +1,18 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 from App.models.database import db, User
 from werkzeug.security import generate_password_hash
+from flask_login import LoginManager
+
+login_manager = LoginManager()
+
+migrate = Migrate()
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
 
 def create_app():
     app = Flask(__name__)
@@ -10,6 +21,8 @@ def create_app():
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     db.init_app(app)
+    migrate.init_app(app, db)
+    login_manager.init_app(app)  
 
     with app.app_context():
         db.create_all()
