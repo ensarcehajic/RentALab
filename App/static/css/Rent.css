@@ -28,21 +28,18 @@ h1 {
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-/* Container for the 3 columns */
 .form-columns {
     display: flex;
-    gap: 0; /* no horizontal gap, we use borders instead */
+    gap: 0; 
     border-left: 1px solid #ccc;
     border-right: 1px solid #ccc;
 }
 
-/* Each column inside the container */
 .form-column {
     flex: 1;
     padding: 0 20px;
 }
 
-/* Vertical separators between columns */
 .form-column:not(:last-child) {
     border-right: 1px solid #ccc;
 }
@@ -75,7 +72,6 @@ textarea {
     resize: vertical;
 }
 
-/* Submit button below all columns, centered and wide */
 .form-submit-wrapper {
     margin-top: 30px;
     text-align: center;
