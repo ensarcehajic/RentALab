@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Equipment Rental{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/Rent.css') }}">
+{% endblock %}
+
+{% block content %}
+<img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="logo">
+<h1>Enter Equipment Rental Information:</h1>
+
+{% if error_message %}
+  <div style="color: white; background-color: #d9534f; padding: 10px; border-radius: 5px; margin-bottom: 1em; font-weight: bold;">
+    {{ error_message }}
+  </div>
+{% endif %}
+
+<div class="form-wrapper">
+    <form method="POST">
+        {{ form.hidden_tag() }}
+
+        <div class="form-columns">
+            <!-- Personal Data Section -->
+            <div class="form-column">
+                <h2>Personnel Information</h2>
+                <p>{{ form.issued_by_id.label }}{{ form.issued_by_id() }}</p>
+                <p>{{ form.issued_by_name.label }}{{ form.issued_by_name() }}</p>
+
+                <p>{{ form.approver_id.label }}{{ form.approver_id() }}</p>
+                <p>{{ form.approver_name.label }}{{ form.approver_name() }}</p>
+
+                <p>{{ form.renter_id.label }}{{ form.renter_id() }}</p>
+                <p>{{ form.renter_name.label }}{{ form.renter_name() }}</p>
+                <p>{{ form.renter_telephone.label }}{{ form.renter_telephone() }}</p>
+                <p>{{ form.renter_address.label }}{{ form.renter_address() }}</p>
+            </div>
+
+            <!-- Equipment Data Section -->
+            <div class="form-column">
+                <h2>Equipment Details</h2>
+                <div style="display: flex; gap: 20px;">
+                    <div style="flex: 1;">
+                        <p>{{ form.inventory_number.label }}{{ form.inventory_number() }}</p>
+                        <p>{{ form.equipment_name.label }}{{ form.equipment_name() }}</p>
+                        <p>{{ form.description.label }}{{ form.description(rows=3, cols=40) }}</p>
+                        <p>{{ form.serial_number.label }}{{ form.serial_number() }}</p>
+                        <p>{{ form.model_number.label }}{{ form.model_number() }}</p>
+                        <p>{{ form.provider.label }}{{ form.provider() }}</p>
+                    </div>
+                    <div style="flex: 1;">
+                        <p>{{ form.equipment_value.label }}{{ form.equipment_value() }}</p>
+                        <p>{{ form.project.label }}{{ form.project() }}</p>
+                        <p>{{ form.serves_period.label }}{{ form.serves_period() }}</p>
+                        <p>{{ form.next_servis.label }}{{ form.next_servis() }}</p>
+                        <p>{{ form.date_buy.label }}{{ form.date_buy() }}</p>
+                        <p>{{ form.warranty_date.label }}{{ form.warranty_date() }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status and Notes Section -->
+            <div class="form-column">
+                <h2>Status and Notes</h2>
+                <p>{{ form.date_rent_start.label }}{{ form.date_rent_start() }}</p>
+                <p>{{ form.date_rent_end.label }}{{ form.date_rent_end() }}</p>
+                <p>{{ form.status.label }}{{ form.status() }}</p>
+                <p>{{ form.note.label }}{{ form.note(rows=3, cols=40) }}</p>
+            </div>
+        </div>
+
+        <div class="form-submit-wrapper">
+            <p>{{ form.submit() }}</p>
+        </div>
+
+    </form>
+</div>
+{% endblock %}

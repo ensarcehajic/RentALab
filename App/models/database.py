@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 
 db = SQLAlchemy()
 
@@ -44,4 +45,16 @@ class equipmentImage(db.Model):
     filename = db.Column(db.String(255), nullable=False)
     oprema = db.relationship('Oprema', back_populates='images')
 
-    
+
+class Rented(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    renter_id = db.Column(db.Integer, nullable=False)
+    approver_id = db.Column(db.Integer, nullable=True)
+    issued_by_id = db.Column(db.Integer, nullable=True)
+    inventory_number_id = db.Column(db.Integer, nullable=False)
+    start_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    end_date = db.Column(db.DateTime, nullable=True)
+    project = db.Column(db.String(255), nullable=True)
+    subject = db.Column(db.String(255), nullable=True)
+    status = db.Column(db.String(20), nullable=False, default="pending")
+    note = db.Column(db.Text, nullable=True)
