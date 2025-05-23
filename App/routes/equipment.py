@@ -1,4 +1,4 @@
-from App.models.database import db, Oprema, CategoryIcon, equipmentImage
+from App.models.database import db, Oprema, equipmentImage
 from flask import Blueprint,Flask, render_template, render_template_string, request,flash,  redirect, url_for,session,make_response, current_app
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
@@ -36,7 +36,6 @@ class OpremaForm(FlaskForm):
     labaratory_assistant = StringField("Sredstvo duzi", validators=[DataRequired()])
     professor = StringField("Zaduženi profesor", validators=[DataRequired()])
     location = StringField("Lokacija", validators=[DataRequired()])
-    category = StringField("Kategorija", validators=[DataRequired()])
     available = SelectField("Dostupno", choices=[('1', 'Da'),('0', 'Ne')])
     note = StringField("Napomena", validators=[DataRequired()])
     image = FileField("Upload New Image", validators=[FileAllowed(['jpg', 'png', 'jpeg'])])
@@ -58,13 +57,13 @@ def download_csv():
     writer.writerow([
         'inventory_number', 'name', 'description', 'serial_number', 'model_number', 'supplier', 'date_of_acquisition',
         'warranty_until', 'purchase_value', 'project', 'service_period', 'next_service', 'labaratory_assistant', 'professor',
-        'location', 'category', 'available', 'note'
+        'location', 'available', 'note'
         ])
     for item in oprema:
         writer.writerow([item.inventory_number, item.name, item.description, item.serial_number,
         item.model_number, item.supplier, item.date_of_acquisition, item.warranty_until, item.purchase_value,
         item.project, item.service_period, item.next_service, item.labaratory_assistant, item.location,
-        item.category, item.available, item.note, item.professor
+        item.available, item.note, item.professor
 
         ])
 
@@ -78,53 +77,25 @@ def download_csv():
     return response
 
 
-@equipment_bp.route('/browse_category', methods=['GET'])
-def browse_category():
-    search = request.args.get('search', '').strip()
+@equipment_bp.route('/browse_equipment')
+def browse_equipment():
+    search_query = request.args.get('search', '').strip()
 
-    categories = [row[0] for row in db.session.query(Oprema.category).distinct().all()]
-    equipment_by_category = {}
-    category_icons = {}
+    query = Oprema.query
 
-    for category in categories:
-        query = db.session.query(Oprema).filter(Oprema.category == category)
+    if search_query:
+        search_term = f"%{search_query}%"
+        query = query.filter(Oprema.name.ilike(search_term))
 
-        if search:
-            query = query.filter(Oprema.name.ilike(f'%{search}%'))
-
-        equipment_by_category[category] = query.all()
-        category_icons[category] = CategoryIcon(category).icon  
-
-    role = current_user.role if current_user.is_authenticated else None
-
-    return render_template(
-        'browse/browse_category.html',
-        search=search,
-        equipment_by_category=equipment_by_category,
-        category_icons=category_icons,
-        role=role
-    )
-
-
-@equipment_bp.route('/browse_equipment/<category_name>')
-def browse_equipment(category_name):
-    search = request.args.get('search', '').strip().lower()
-
-    query = db.session.query(Oprema).filter(Oprema.category == category_name)
-    all_equipment = query.all()
-
-    if search:
-        all_equipment = [eq for eq in all_equipment if search in eq.name.lower()]
-
-    icon = CategoryIcon(category_name).icon
+    equipment_list = query.all()
 
     return render_template(
         'browse/browse_equipment.html',
-        category_name=category_name,
-        equipment_list=all_equipment,
-        search=search,
-        category_icon=icon
+        equipment_list=equipment_list,
+        search=search_query
     )
+
+
 
 @equipment_bp.route('/equipment/<int:equipment_id>')
 def equipment_detail(equipment_id):
@@ -163,7 +134,7 @@ def dodaj_opremu():
                 # raspakiraj sve vrijednosti
                 (inventory_number, name, description, serial_number, model_number, supplier, date_of_acquisition,
                  warranty_until, purchase_value, project, service_period, next_service, labaratory_assistant,
-                 professor, location, category, available, note) = row + [None] * (18 - len(row))  # napomena: moraš uskladiti broj stupaca
+                 professor, location, available, note) = row + [None] * (18 - len(row))  # napomena: moraš uskladiti broj stupaca
 
                 # provjeri postoji li oprema s istim inventory_number ili name (po želji)
                 postoji = Oprema.query.filter_by(inventory_number=inventory_number).first()
@@ -186,7 +157,6 @@ def dodaj_opremu():
                     labaratory_assistant=labaratory_assistant,
                     professor=None,  # ako treba, dodaj ovo iz CSV
                     location=location,
-                    category=category,
                     available=int(available) if available.isdigit() else 0,
                     note=note
                 )
@@ -212,7 +182,6 @@ def dodaj_opremu():
             labaratory_assistant=form.labaratory_assistant.data,
             professor=form.professor.data,
             location=form.location.data,
-            category=form.category.data,
             available=form.available.data,
             note=form.note.data,
         )
@@ -261,22 +230,18 @@ def izmijeni_opremu(oprema_id):
     form = OpremaForm(obj=oprema)
 
     if form.validate_on_submit():
-        # Update basic fields
         form.populate_obj(oprema)
 
-        # --- Handle image deletions ---
         keep_image_ids = request.form.getlist('keep_image_ids')
         keep_image_ids = set(map(int, keep_image_ids)) if keep_image_ids else set()
 
-        for image in list(oprema.images):  # Copy to avoid modifying while iterating
+        for image in list(oprema.images):
             if image.id not in keep_image_ids:
-                # Delete file from disk
                 file_path = os.path.join(current_app.root_path, 'static', 'equipment_images', image.filename)
                 if os.path.exists(file_path):
                     os.remove(file_path)
                 db.session.delete(image)
 
-        # --- Handle new uploaded images ---
         images = request.files.getlist('images')
         upload_folder = os.path.join(current_app.root_path, 'static', 'equipment_images')
         os.makedirs(upload_folder, exist_ok=True)
@@ -287,7 +252,6 @@ def izmijeni_opremu(oprema_id):
                 save_path = os.path.join(upload_folder, filename)
                 image.save(save_path)
 
-                # Create and append new image record
                 new_img = equipmentImage(filename=filename, oprema_id=oprema.id)
                 db.session.add(new_img)
 

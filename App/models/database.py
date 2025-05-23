@@ -28,7 +28,6 @@ class Oprema(db.Model):
     labaratory_assistant = db.Column(db.String(100), nullable=False)
     professor = db.Column(db.String(100), nullable=False)
     location = db.Column(db.String(100), nullable=False)
-    category = db.Column(db.String(100), nullable=False)
     available = db.Column(db.Integer, nullable=False)
     note = db.Column(db.String(500), nullable=False)
     images = db.relationship('equipmentImage', back_populates='oprema', cascade='all, delete-orphan')
@@ -42,14 +41,3 @@ class equipmentImage(db.Model):
     oprema = db.relationship('Oprema', back_populates='images')
 
     
-class CategoryIcon:
-    def __init__(self, category_name):
-        self.category_name = category_name.lower()
-        self.icon = self._get_icon_for_category()
-
-    def _get_icon_for_category(self):
-        mapping = {
-            'racunar': 'icons/racunar.png',
-            'osciloskop': 'icons/osciloscope.png',
-        }
-        return mapping.get(self.category_name, 'icons/gear.png')
