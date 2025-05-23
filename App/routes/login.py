@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, session, get_flashed_messages
+from flask import Blueprint, render_template, redirect, url_for, flash, session, get_flashed_messages,request
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Length, Email, Regexp, EqualTo
@@ -37,7 +37,10 @@ class RegisterForm(FlaskForm):
     ])
     address = StringField('Address', validators=[DataRequired()])
     city = StringField('City', validators=[DataRequired()])
-    phone_number = StringField('Phone Number', validators=[DataRequired()])
+    phone_number = StringField('Phone Number', validators=[
+    DataRequired(),
+    Regexp(r'^\+?[0-9\s\-]{6,15}$', message="Phone number must contain only digits and may include +, spaces or dashes.")
+    ])
     password = PasswordField('Password', validators=[
         DataRequired(),
         Length(min=6)
@@ -56,6 +59,7 @@ def login():
         return redirect(url_for('login_bp.dashboard'))
 
     form = LoginForm()
+
     if form.validate_on_submit():
         email = form.email.data
         password = form.password.data
@@ -69,44 +73,62 @@ def login():
             return redirect(url_for('login_bp.dashboard'))
         else:
             flash('Invalid email or password', 'danger')
+            return render_template('login.html', form=form)
+
+
+    elif request.method == 'POST':
+        for field, errors in form.errors.items():
+            for error in errors:
+                flash(error, 'danger')
 
     return render_template('login.html', form=form)
 
-
 @login_bp.route('/register', methods=['GET', 'POST'])
 def register():
+    if session.get('user'):
+        flash('You are already logged in.', 'info')
+        return redirect(url_for('login_bp.dashboard'))
     form = RegisterForm()
     if form.validate_on_submit():
         email = form.email.data
-        name = form.name.data
-        surname = form.surname.data
-        address = form.address.data
-        city = form.city.data
         phone_number = form.phone_number.data
         password = form.password.data
+        confirm_password = form.confirm_password.data
 
-        existing_user = User.query.filter_by(email=email).first()
-        if existing_user:
+        if User.query.filter_by(email=email).first():
             flash('Email already exists.', 'danger')
             return redirect(url_for('login_bp.register'))
 
+        if User.query.filter_by(phone_number=phone_number).first():
+            flash('Phone number already exists.', 'danger')
+            return redirect(url_for('login_bp.register'))
+
+        if password != confirm_password:
+            flash('Passwords do not match.', 'danger')
+            return redirect(url_for('login_bp.register'))
+
         new_user = User(
-            name=name,
-            surname=surname,
+            name=form.name.data,
+            surname=form.surname.data,
             email=email,
-            address=address,
-            city=city,
+            address=form.address.data,
+            city=form.city.data,
             phone_number=phone_number,
             password=generate_password_hash(password),
-            role="student"  
+            role="student"
         )
         db.session.add(new_user)
         db.session.commit()
+
         flash('Registration successful. Please login.', 'success')
         return redirect(url_for('login_bp.login'))
 
-    return render_template('register.html', form=form)
+    elif request.method == 'POST':
+        for field, errors in form.errors.items():
+            for error in errors:
+                flash(error, 'danger')
 
+    return render_template('register.html', form=form)
 
 
 @login_bp.route('/dashboard')
@@ -124,7 +146,7 @@ def dashboard():
 @login_bp.route('/logout')
 def logout():
     session.pop('user', None)
-    get_flashed_messages()  # Ovo očisti stare poruke
+    get_flashed_messages()
     flash("You have been logged out.", 'info')
     return redirect(url_for('login_bp.login'))
 

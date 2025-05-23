@@ -16,7 +16,7 @@ class User(db.Model):
     verified = db.Column(db.Boolean, default=False, nullable=False)
 
 class Oprema(db.Model):
-    __tablename__ = 'oprema'
+    __tablename__ = 'equipment'
     id = db.Column(db.Integer, primary_key=True)
     inventory_number = db.Column(db.String(100), nullable=False)
     name = db.Column(db.String(100), nullable=False)

@@ -16,7 +16,7 @@ def create_app():
 
         users = [
     {
-        'email': 'admin@example.com',
+        'email': 'admin@fet.ba',
         'name': 'Admin',
         'surname': 'User',
         'address': 'Admin Street 1',
@@ -26,7 +26,7 @@ def create_app():
         'role': 'admin'
     },
     {
-        'email': 'laborant@example.com',
+        'email': 'laborant@fet.ba',
         'name': 'Lab',
         'surname': 'Tech',
         'address': 'Lab Street 2',
@@ -36,7 +36,7 @@ def create_app():
         'role': 'laborant'
     },
     {
-        'email': 'student@example.com',
+        'email': 'student@fet.ba',
         'name': 'Student',
         'surname': 'One',
         'address': 'Student Ave 3',
