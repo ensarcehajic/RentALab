@@ -34,7 +34,6 @@ class OpremaForm(FlaskForm):
     service_period = StringField("Servisni period", validators=[DataRequired()])
     next_service = DateField("Naredni servis", validators=[DataRequired()])
     labaratory_assistant = StringField("Sredstvo duzi", validators=[DataRequired()])
-    professor = StringField("Zaduženi profesor", validators=[DataRequired()])
     location = StringField("Lokacija", validators=[DataRequired()])
     available = SelectField("Dostupno", choices=[('1', 'Da'),('0', 'Ne')])
     note = StringField("Napomena", validators=[DataRequired()])
@@ -56,14 +55,14 @@ def download_csv():
     writer = csv.writer(si)
     writer.writerow([
         'inventory_number', 'name', 'description', 'serial_number', 'model_number', 'supplier', 'date_of_acquisition',
-        'warranty_until', 'purchase_value', 'project', 'service_period', 'next_service', 'labaratory_assistant', 'professor',
+        'warranty_until', 'purchase_value', 'project', 'service_period', 'next_service', 'labaratory_assistant',
         'location', 'available', 'note'
         ])
     for item in oprema:
         writer.writerow([item.inventory_number, item.name, item.description, item.serial_number,
         item.model_number, item.supplier, item.date_of_acquisition, item.warranty_until, item.purchase_value,
         item.project, item.service_period, item.next_service, item.labaratory_assistant, item.location,
-        item.available, item.note, item.professor
+        item.available, item.note
 
         ])
 
@@ -134,7 +133,7 @@ def dodaj_opremu():
                 # raspakiraj sve vrijednosti
                 (inventory_number, name, description, serial_number, model_number, supplier, date_of_acquisition,
                  warranty_until, purchase_value, project, service_period, next_service, labaratory_assistant,
-                 professor, location, available, note) = row + [None] * (18 - len(row))  # napomena: moraš uskladiti broj stupaca
+                 location, available, note) = row + [None] * (18 - len(row))  # napomena: moraš uskladiti broj stupaca
 
                 # provjeri postoji li oprema s istim inventory_number ili name (po želji)
                 postoji = Oprema.query.filter_by(inventory_number=inventory_number).first()
@@ -155,7 +154,6 @@ def dodaj_opremu():
                     service_period=service_period,
                     next_service=next_service,
                     labaratory_assistant=labaratory_assistant,
-                    professor=None,  # ako treba, dodaj ovo iz CSV
                     location=location,
                     available=int(available) if available.isdigit() else 0,
                     note=note
@@ -180,7 +178,6 @@ def dodaj_opremu():
             service_period=form.service_period.data,
             next_service=form.next_service.data,
             labaratory_assistant=form.labaratory_assistant.data,
-            professor=form.professor.data,
             location=form.location.data,
             available=form.available.data,
             note=form.note.data,

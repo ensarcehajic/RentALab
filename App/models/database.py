@@ -26,7 +26,6 @@ class Oprema(db.Model):
     service_period = db.Column(db.String(100), nullable=False)
     next_service = db.Column(db.Date, nullable=False)
     labaratory_assistant = db.Column(db.String(100), nullable=False)
-    professor = db.Column(db.String(100), nullable=False)
     location = db.Column(db.String(100), nullable=False)
     available = db.Column(db.Integer, nullable=False)
     note = db.Column(db.String(500), nullable=False)
