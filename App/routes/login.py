@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, session, request, current_app
+from flask import Blueprint, render_template, redirect, url_for, flash, session, request, current_app,get_flashed_messages
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Length, Email, Regexp, EqualTo
@@ -162,8 +162,8 @@ def dashboard():
 
 @login_bp.route('/logout')
 def logout():
-    session.pop('user', None)
     get_flashed_messages()
+    session.pop('user', None)
     flash("You have been logged out.", 'info')
     return redirect(url_for('login_bp.login'))
 

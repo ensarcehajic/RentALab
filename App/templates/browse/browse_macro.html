@@ -12,7 +12,6 @@
 {% macro equipment_row(item) %}
 <tr class="{% if item.kolicina == 0 %}nedostupno{% endif %}">
     <td>{{ item.naziv }}</td>
-    <td>{{ item.profesor or 'N/A' }}</td>
     <td>
         {% if item.kolicina > 0 %}
             <span class="text-success fw-bold">Dostupno ({{ item.kolicina }})</span>

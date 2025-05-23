@@ -4,7 +4,9 @@ from flask_migrate import Migrate
 from App.models.database import db, User
 from werkzeug.security import generate_password_hash
 from flask_login import LoginManager
+from flask_mail import Mail
 
+mail = Mail()
 login_manager = LoginManager()
 
 migrate = Migrate()
@@ -44,7 +46,8 @@ def create_app():
         'city': 'AdminCity',
         'phone_number': '111-111',
         'password': 'admin123',
-        'role': 'admin'
+        'role': 'admin',
+        'verified': True
     },
     {
         'email': 'laborant@fet.ba',
@@ -54,7 +57,8 @@ def create_app():
         'city': 'LabCity',
         'phone_number': '222-222',
         'password': 'laborant123',
-        'role': 'laborant'
+        'role': 'laborant',
+        'verified': True
     },
     {
         'email': 'student@fet.ba',
@@ -64,7 +68,8 @@ def create_app():
         'city': 'StudentCity',
         'phone_number': '333-333',
         'password': 'student123',
-        'role': 'student'
+        'role': 'student',
+        'verified': True
     }
 ]
         add_users(users)
@@ -90,7 +95,8 @@ def add_users(users):
                 city=user['city'],
                 phone_number=user['phone_number'],
                 password=generate_password_hash(user['password']),
-                role=user['role']
+                role=user['role'],
+                verified=user['verified']
             )
             db.session.add(new_user)
     db.session.commit()

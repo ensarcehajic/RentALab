@@ -1,12 +1,12 @@
-from App.models.database import db, Oprema, equipmentImage
+from App.models.database import db, Oprema, equipmentImage, Rented, User
 from flask import Blueprint,Flask, render_template, render_template_string, request,flash,  redirect, url_for,session,make_response, current_app
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from flask_login import login_required
 from flask_login import current_user
-from wtforms import StringField, IntegerField, SubmitField, DateField, SelectField
-from wtforms.validators import DataRequired, NumberRange,InputRequired
+from wtforms import StringField, IntegerField, SubmitField, DateField, SelectField, TextAreaField, DateTimeField, DecimalField
+from wtforms.validators import DataRequired, NumberRange,InputRequired, Optional
 from sqlalchemy import func
 import os
 from datetime import datetime
