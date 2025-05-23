@@ -1,7 +1,10 @@
-from App.models.database import db, Oprema
-from flask import Blueprint,Flask, render_template, render_template_string, request, redirect, url_for,session,make_response
+from App.models.database import db, Oprema, equipmentImage
+from flask import Blueprint,Flask, render_template, render_template_string, request,flash,  redirect, url_for,session,make_response, current_app
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileField, FileAllowed
+from flask_login import login_required
+from flask_login import current_user
 from wtforms import StringField, IntegerField, SubmitField, DateField, SelectField
 from wtforms.validators import DataRequired, NumberRange,InputRequired
 from sqlalchemy import func
@@ -9,6 +12,8 @@ import os
 from datetime import datetime
 import csv,psycopg2
 from io import StringIO
+from werkzeug.utils import secure_filename
+
 
 template_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'templates'))
 static_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'static'))
@@ -30,9 +35,9 @@ class OpremaForm(FlaskForm):
     next_service = DateField("Naredni servis", validators=[DataRequired()])
     labaratory_assistant = StringField("Sredstvo duzi", validators=[DataRequired()])
     location = StringField("Lokacija", validators=[DataRequired()])
-    category = StringField("Kategorija", validators=[DataRequired()])
     available = SelectField("Dostupno", choices=[('1', 'Da'),('0', 'Ne')])
     note = StringField("Napomena", validators=[DataRequired()])
+    image = FileField("Upload New Image", validators=[FileAllowed(['jpg', 'png', 'jpeg'])])
     submit = SubmitField("Dodaj opremu")
 
 
@@ -51,13 +56,14 @@ def download_csv():
     writer.writerow([
         'inventory_number', 'name', 'description', 'serial_number', 'model_number', 'supplier', 'date_of_acquisition',
         'warranty_until', 'purchase_value', 'project', 'service_period', 'next_service', 'labaratory_assistant',
-        'location', 'category', 'available', 'note'
+        'location', 'available', 'note'
         ])
     for item in oprema:
         writer.writerow([item.inventory_number, item.name, item.description, item.serial_number,
         item.model_number, item.supplier, item.date_of_acquisition, item.warranty_until, item.purchase_value,
         item.project, item.service_period, item.next_service, item.labaratory_assistant, item.location,
-        item.category, item.available, item.note
+        item.available, item.note
+
         ])
 
     
@@ -70,34 +76,38 @@ def download_csv():
     return response
 
 
-@equipment_bp.route('/browse')
-def pregledaj_opremu():
-    if 'user' not in session:
-        return redirect(url_for('login_bp.login'))
-
-    kategorije = [k[0] for k in db.session.query(Oprema.kategorija).distinct().all()]
-    odabrana_kategorija = request.args.get('kategorija')
-    search = request.args.get('search', '').strip().lower()
+@equipment_bp.route('/browse_equipment')
+def browse_equipment():
+    search_query = request.args.get('search', '').strip()
 
     query = Oprema.query
 
-    if odabrana_kategorija:
-        query = query.filter_by(kategorija=odabrana_kategorija)
+    if search_query:
+        search_term = f"%{search_query}%"
+        query = query.filter(Oprema.name.ilike(search_term))
 
-    if search:
-        query = query.filter(func.lower(Oprema.naziv).like(f'%{search}%'))
-
-    sva_oprema = query.all()
-    role = session.get('role')
+    equipment_list = query.all()
 
     return render_template(
-        'browse_equipment.html',
-        sva_oprema=sva_oprema,
-        role=role,
-        kategorije=kategorije,
-        odabrana_kategorija=odabrana_kategorija,
-        search=search
+        'browse/browse_equipment.html',
+        equipment_list=equipment_list,
+        search=search_query
     )
+
+
+
+@equipment_bp.route('/equipment/<int:equipment_id>')
+def equipment_detail(equipment_id):
+    equipment = Oprema.query.get_or_404(equipment_id)
+
+    user_role = session.get('role')
+    return render_template(
+        'browse/equipment_info.html',
+        equipment=equipment,
+        user_role=user_role
+    )
+
+
 @equipment_bp.route("/dodaj", methods=['GET', 'POST'])
 def dodaj_opremu():
     if 'user' not in session:
@@ -108,6 +118,51 @@ def dodaj_opremu():
 
     form = OpremaForm()
 
+    # --- RUKOVANJE CSV UPLOADOM ---
+    if request.method == 'POST' and 'file' in request.files:
+        file = request.files['file']
+        if file and file.filename.endswith('.csv'):
+            # Parsiranje CSV-a
+            csv_file = csv.reader(file.stream.read().decode('utf-8').splitlines())
+            next(csv_file)  # preskoči header
+
+            for row in csv_file:
+                if len(row) != 17:
+                    continue  # preskoči redove koji nemaju točno 17 stupaca
+
+                # raspakiraj sve vrijednosti
+                (inventory_number, name, description, serial_number, model_number, supplier, date_of_acquisition,
+                 warranty_until, purchase_value, project, service_period, next_service, labaratory_assistant,
+                 location, available, note) = row + [None] * (18 - len(row))  # napomena: moraš uskladiti broj stupaca
+
+                # provjeri postoji li oprema s istim inventory_number ili name (po želji)
+                postoji = Oprema.query.filter_by(inventory_number=inventory_number).first()
+                if postoji:
+                    continue  # preskoči ako već postoji
+
+                novi = Oprema(
+                    inventory_number=inventory_number,
+                    name=name,
+                    description=description,
+                    serial_number=serial_number,
+                    model_number=model_number,
+                    supplier=supplier,
+                    date_of_acquisition=date_of_acquisition,
+                    warranty_until=warranty_until,
+                    purchase_value=purchase_value,
+                    project=project,
+                    service_period=service_period,
+                    next_service=next_service,
+                    labaratory_assistant=labaratory_assistant,
+                    location=location,
+                    available=int(available) if available.isdigit() else 0,
+                    note=note
+                )
+                db.session.add(novi)
+            db.session.commit()
+            return redirect(url_for('login_bp.dashboard'))
+
+    # --- RUKOVANJE FORMOM ---
     if form.validate_on_submit():
         novi_unos = Oprema(
             inventory_number=form.inventory_number.data,
@@ -124,84 +179,103 @@ def dodaj_opremu():
             next_service=form.next_service.data,
             labaratory_assistant=form.labaratory_assistant.data,
             location=form.location.data,
-            category=form.category.data,
             available=form.available.data,
             note=form.note.data,
         )
         db.session.add(novi_unos)
 
+        images = request.files.getlist('images')
+        upload_folder = os.path.join(current_app.root_path, 'static', 'equipment_images')
+        os.makedirs(upload_folder, exist_ok=True)
+
+        for image in images:
+            if image.filename != '':
+                filename = secure_filename(image.filename)
+                save_path = os.path.join(upload_folder, filename)
+                image.save(save_path)
+
+                image_record = equipmentImage(filename=filename, oprema_id=novi_unos.id)
+                novi_unos.images.append(image_record)
+
         db.session.commit()
         return redirect(url_for('login_bp.dashboard'))
 
-    
-    if request.method == 'POST' and 'file' in request.files:
-        file = request.files['file']
-        if file and file.filename.endswith('.csv'):
-            file.stream.seek(0)
-            csv_file = csv.reader(file.stream.read().decode('utf-8').splitlines())
-            next(csv_file)  
-
-            conn = psycopg2.connect(
-                dbname="rentalab", user="admin", password="1234", host="localhost"
-            )
-            cur = conn.cursor()
-
-            for row in csv_file:
-                try:
-                    inventory_number, name, description, serial_number, model_number, supplier, date_of_acquisition, warranty_until, purchase_value, project, service_period, next_service, labaratory_assistant, location, category, available, note = row
-                except ValueError:
-                    continue  
-
-                cur.execute("SELECT id, kolicina FROM oprema WHERE LOWER(naziv) = LOWER(%s)", (naziv,))
-                existing = cur.fetchone()
-
-                cur.execute(
-                    "INSERT INTO oprema(inventory_number, name, description, serial_number, model_number, supplier, date_of_acquisition, warranty_until, purchase_value, project, service_period, next_service, labaratory_assistant, location, category, available, note) VALUES (%s, %s, %s)",
-                    (inventory_number, name, description, serial_number, model_number, supplier, date_of_acquisition, warranty_until, purchase_value, project, service_period, next_service, labaratory_assistant, location, category, available, note)
-                )
-
-
-            conn.commit()
-            cur.close()
-            conn.close()
-            return redirect(url_for('login_bp.dashboard'))
-
     return render_template("dodavanje_opreme.html", form=form)
+
+
 @equipment_bp.route('/dashboard')
 def back_to_dashboard():
     return render_template("dashboard.html")
 
 
+
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
 @equipment_bp.route('/izmijeni/<int:oprema_id>', methods=['GET', 'POST'])
 def izmijeni_opremu(oprema_id):
-     if 'user' not in session:
+    if 'user' not in session:
         return redirect(url_for('login_bp.login'))
-     
-     if session.get('role') not in ['admin', 'laborant']:
+
+    if session.get('role') not in ['admin', 'laborant']:
         return redirect(url_for('login_bp.dashboard'))
 
-     oprema = Oprema.query.get_or_404(oprema_id)
-     form = OpremaForm(obj=oprema)
+    oprema = Oprema.query.get_or_404(oprema_id)
+    form = OpremaForm(obj=oprema)
 
-     if form.validate_on_submit():
-        oprema.naziv = form.naziv.data
-        oprema.kolicina = form.kolicina.data
-        oprema.kategorija = form.kategorija.data
+    if form.validate_on_submit():
+        form.populate_obj(oprema)
+
+        keep_image_ids = request.form.getlist('keep_image_ids')
+        keep_image_ids = set(map(int, keep_image_ids)) if keep_image_ids else set()
+
+        for image in list(oprema.images):
+            if image.id not in keep_image_ids:
+                file_path = os.path.join(current_app.root_path, 'static', 'equipment_images', image.filename)
+                if os.path.exists(file_path):
+                    os.remove(file_path)
+                db.session.delete(image)
+
+        images = request.files.getlist('images')
+        upload_folder = os.path.join(current_app.root_path, 'static', 'equipment_images')
+        os.makedirs(upload_folder, exist_ok=True)
+
+        for image in images:
+            if image and allowed_file(image.filename):
+                filename = secure_filename(image.filename)
+                save_path = os.path.join(upload_folder, filename)
+                image.save(save_path)
+
+                new_img = equipmentImage(filename=filename, oprema_id=oprema.id)
+                db.session.add(new_img)
+
         db.session.commit()
-        return redirect(url_for('equipment_bp.pregledaj_opremu'))
+        flash('Equipment updated successfully.', 'success')
+        return redirect(url_for('equipment_bp.equipment_detail', equipment_id=oprema.id))
 
-     return render_template('dodavanje_opreme.html', form=form, izmjena=True)
+    return render_template("dodavanje_opreme.html", form=form, edit_mode=True, oprema=oprema, images=oprema.images)
+
 
 @equipment_bp.route('/izbrisi/<int:oprema_id>', methods=['POST'])
 def izbrisi_opremu(oprema_id):
-     if 'user' not in session:
-        return redirect(url_for('login_bp.login'))
-
-     if session.get('role') not in ['admin', 'laborant']:
+    if session.get('role') not in ['admin', 'laborant']:
         return redirect(url_for('login_bp.dashboard'))
 
-     oprema = Oprema.query.get_or_404(oprema_id)
-     db.session.delete(oprema)
-     db.session.commit()
-     return redirect(url_for('equipment_bp.pregledaj_opremu'))
+    oprema = Oprema.query.get_or_404(oprema_id)
 
+    for image in oprema.images:
+        image_path = os.path.join(current_app.root_path, 'static', 'equipment_images', image.filename)
+        if os.path.exists(image_path):
+            try:
+                os.remove(image_path)
+            except Exception as e:
+                print(f"Error deleting image file {image.filename}: {e}")
+
+    db.session.delete(oprema)
+    db.session.commit()
+
+    flash('Equipment and associated images have been deleted.', 'success')
+    return redirect(url_for('equipment_bp.back_to_dashboard'))

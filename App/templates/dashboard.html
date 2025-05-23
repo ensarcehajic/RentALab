@@ -44,7 +44,14 @@
         </div>
       </a>
     {% endif %}
-
+    <div class="right-cards">
+        <a href="{{ url_for('equipment_bp.browse_equipment') }}" class="card">
+          <img src="{{ url_for('static', filename='images/assets.png') }}" alt="Available Assets" />
+          <div>
+            <h3>AVAILABLE ASSETS</h3>
+            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry...</p>
+          </div>
+        </a>
       </div>
     </div>
    

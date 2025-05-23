@@ -32,8 +32,16 @@ class Oprema(db.Model):
     next_service = db.Column(db.Date, nullable=False)
     labaratory_assistant = db.Column(db.String(100), nullable=False)
     location = db.Column(db.String(100), nullable=False)
-    category = db.Column(db.String(100), nullable=False)
     available = db.Column(db.Integer, nullable=False)
     note = db.Column(db.String(500), nullable=False)
-    
+    images = db.relationship('equipmentImage', back_populates='oprema', cascade='all, delete-orphan')
+
+
+class equipmentImage(db.Model):
+    __tablename__ = 'oprema_images'
+    id = db.Column(db.Integer, primary_key=True)
+    oprema_id = db.Column(db.Integer, db.ForeignKey('oprema.id'), nullable=False)
+    filename = db.Column(db.String(255), nullable=False)
+    oprema = db.relationship('Oprema', back_populates='images')
+
     

@@ -8,36 +8,150 @@
 
 {% block content %}
 <div class="container">
-        <div class="center-content">
-            <img src="/static/images/logo.png" alt="Logo" class="logo">
-            <h1>Dodavanje opreme</h1>
-            <form method="POST">
-                {{ form.hidden_tag() }}
-                <p>{{ form.inventory_number.label }}{{ form.inventory_number(size=30) }}</p>
-                <p>{{ form.name.label }}{{ form.name(size=30) }}</p>
-                <p>{{ form.description.label }}{{ form.description(size=30) }}</p>
-                <p>{{ form.serial_number.label }}{{ form.serial_number(size=30) }}</p>
-                <p>{{ form.model_number.label }}{{ form.model_number(size=30) }}</p>
-                <p>{{ form.supplier.label }}{{ form.supplier(size=30) }}</p>
-                <p>{{ form.date_of_acquisition.label }}{{ form.date_of_acquisition(type="date") }}</p>
-                <p>{{ form.warranty_until.label }}{{ form.warranty_until(type="date") }}</p>
-                <p>{{ form.purchase_value.label }}{{ form.purchase_value(size=30) }}</p>
-                <p>{{ form.project.label }}{{ form.project(size=30) }}</p>
-                <p>{{ form.service_period.label }}{{ form.service_period(size=30) }}</p>
-                <p>{{ form.next_service.label }}{{ form.next_service(type="date") }}</p>
-                <p>{{ form.labaratory_assistant.label }}{{ form.labaratory_assistant(size=30) }}</p>
-                <p>{{ form.location.label }}{{ form.location(size=30) }}</p>
-                <p>{{ form.category.label }}{{ form.category(size=30) }}</p>
-                <p>{{ form.available.label }}{{ form.available() }}</p>
-                <p>{{ form.note.label }}{{ form.note(size=200) }}</p>
-                <p>{{ form.submit() }}</p>
-            </form>
+    <div class="center-content">
+        <img src="/static/images/logo.png" alt="Logo" class="logo">
+        <h1>{% if edit_mode %}Uredi opremu{% else %}Dodavanje opreme{% endif %}</h1>
 
-            <h1>Dodaj opremu preko CSV-a</h1>
-            <form method="POST" enctype="multipart/form-data">
-                <input type="file" name="file" accept=".csv" required>
-                <button type="submit">Dodaj</button>
-            </form>
-        </div>
+        <!-- Equipment Form -->
+        <form method="POST" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+            <input type="hidden" name="form_type" value="equipment_form">
+
+            <!-- Form Fields -->
+            <p>{{ form.inventory_number.label }}{{ form.inventory_number(size=30) }}</p>
+            <p>{{ form.name.label }}{{ form.name(size=30) }}</p>
+            <p>{{ form.description.label }}{{ form.description(size=30) }}</p>
+            <p>{{ form.serial_number.label }}{{ form.serial_number(size=30) }}</p>
+            <p>{{ form.model_number.label }}{{ form.model_number(size=30) }}</p>
+            <p>{{ form.supplier.label }}{{ form.supplier(size=30) }}</p>
+            <p>{{ form.date_of_acquisition.label }}{{ form.date_of_acquisition(type="date") }}</p>
+            <p>{{ form.warranty_until.label }}{{ form.warranty_until(type="date") }}</p>
+            <p>{{ form.purchase_value.label }}{{ form.purchase_value(size=30) }}</p>
+            <p>{{ form.project.label }}{{ form.project(size=30) }}</p>
+            <p>{{ form.service_period.label }}{{ form.service_period(size=30) }}</p>
+            <p>{{ form.next_service.label }}{{ form.next_service(type="date") }}</p>
+            <p>{{ form.labaratory_assistant.label }}{{ form.labaratory_assistant(size=30) }}</p>
+            <p>{{ form.location.label }}{{ form.location(size=30) }}</p>
+            <p>{{ form.available.label }}{{ form.available() }}</p>
+            <p>{{ form.note.label }}{{ form.note(size=200) }}</p>
+
+            <!-- Existing Images (edit mode only) -->
+            {% if edit_mode %}
+            <h3>Postojeće slike</h3>
+            <div id="existing-images" style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
+                {% for img in images %}
+                <div class="existing-image" style="position: relative;" data-img-id="{{ img.id }}">
+                    <img src="{{ url_for('static', filename='equipment_images/' ~ img.filename) }}"
+                         style="width: 80px; height: 80px; object-fit: cover; border: 1px solid #ccc; border-radius: 4px;">
+                    <span onclick="removeExistingImage(this)"
+                          style="position: absolute; top: 2px; right: 6px; cursor: pointer; background: #fff; border-radius: 50%; padding: 2px 6px; font-weight: bold; color: #d00;">
+                        ×
+                    </span>
+                    <input type="hidden" name="keep_image_ids" value="{{ img.id }}">
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- New Image Upload -->
+            <p>
+                <label for="images">Dodaj slike:</label>
+                <input type="file" name="images" id="images" multiple accept="image/*" onchange="previewImages(event)">
+            </p>
+            <div id="image-tray" style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;"></div>
+            <button type="button" id="clear-all-btn" onclick="clearAllImages()" style="display:none; margin-bottom: 10px;">Ukloni sve slike</button>
+
+            <!-- Submit -->
+            <p>{{ form.submit() }}</p>
+        </form>
+
+        <!-- CSV Form -->
+        {% if not edit_mode %}
+        <h1>Dodaj opremu preko CSV-a</h1>
+        <form method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="form_type" value="csv_form">
+            <input type="file" name="file" accept=".csv" required>
+            <button type="submit">Dodaj</button>
+        </form>
+        {% endif %}
+    </div>
 </div>
+
+<!-- JS Scripts -->
+<script>
+let selectedFiles = [];
+
+function previewImages(event) {
+    const files = Array.from(event.target.files);
+    selectedFiles = files;
+    renderTray();
+    document.getElementById('clear-all-btn').style.display = files.length ? 'inline-block' : 'none';
+}
+
+function renderTray() {
+    const tray = document.getElementById('image-tray');
+    tray.innerHTML = '';
+    selectedFiles.forEach((file, idx) => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const div = document.createElement('div');
+            div.style.position = 'relative';
+            div.style.display = 'inline-block';
+
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.style.width = '80px';
+            img.style.height = '80px';
+            img.style.objectFit = 'cover';
+            img.style.border = '1px solid #ccc';
+            img.style.borderRadius = '4px';
+
+            const xBtn = document.createElement('span');
+            xBtn.textContent = '×';
+            xBtn.style.position = 'absolute';
+            xBtn.style.top = '2px';
+            xBtn.style.right = '6px';
+            xBtn.style.cursor = 'pointer';
+            xBtn.style.background = '#fff';
+            xBtn.style.borderRadius = '50%';
+            xBtn.style.padding = '2px 6px';
+            xBtn.style.fontWeight = 'bold';
+            xBtn.style.color = '#d00';
+            xBtn.onclick = function() {
+                removeImage(idx);
+            };
+
+            div.appendChild(img);
+            div.appendChild(xBtn);
+            tray.appendChild(div);
+        };
+        reader.readAsDataURL(file);
+    });
+    updateInputFiles();
+}
+
+function removeImage(idx) {
+    selectedFiles.splice(idx, 1);
+    renderTray();
+    document.getElementById('clear-all-btn').style.display = selectedFiles.length ? 'inline-block' : 'none';
+}
+
+function clearAllImages() {
+    selectedFiles = [];
+    renderTray();
+    document.getElementById('clear-all-btn').style.display = 'none';
+}
+
+function updateInputFiles() {
+    const dataTransfer = new DataTransfer();
+    selectedFiles.forEach(file => dataTransfer.items.add(file));
+    document.getElementById('images').files = dataTransfer.files;
+}
+
+// Remove existing image from DOM only
+function removeExistingImage(span) {
+    const div = span.parentElement;
+    div.remove();
+}
+</script>
 {% endblock %}
