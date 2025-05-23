@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}{{ equipment.name }}{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/info.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/browse.css') }}">
+{% endblock %}
+
+
+{% block content %}
+<h1 class="text-center">{{ equipment.name }}</h1>
+
+{% if user_role in ['admin', 'laborant'] %}
+<div style="display: flex; justify-content: center; align-items: center; gap: 16px; margin-top: 2rem;">
+    <div>
+        <a href="{{ url_for('equipment_bp.izmijeni_opremu', oprema_id=equipment.id) }}" style="text-decoration: none;">
+            <button type="button" class="iznajmi-dugme" style="height: 40px; width: 120px;">Izmijeni</button>
+        </a>
+    </div>
+</div>
+{% endif %}
+
+{% if user_role in ['admin', 'laborant'] %}
+    <div style="display: flex; justify-content: center; align-items: center; gap: 16px; margin-top: 2rem;">
+        <div>
+            <form action="{{ url_for('equipment_bp.izbrisi_opremu', oprema_id=equipment.id) }}" method="POST"
+                  onsubmit="return confirm('Are you sure you want to delete this equipment?');" style="margin: 0;">
+                <button type="submit" class="onemoguceno-dugme" style="height: 40px; width: 120px;">Izbriši</button>
+            </form>
+        </div>
+    </div>
+{% endif %}
+
+
+{% if equipment.images %}
+  <div class="equipment-images" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
+    {% for img in equipment.images %}
+      <img src="{{ url_for('static', filename='equipment_images/' ~ img.filename) }}"
+           alt="Image of {{ equipment.name }}"
+           style="max-width: 200px; margin: 5px; cursor: pointer;"
+           onclick="showPopup({{ loop.index0 | int }})">
+    {% endfor %}
+  </div>
+{% else %}
+  <p>No images available.</p>
+{% endif %}
+
+<div class="popup-img" id="popup" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.8); align-items:center; justify-content:center; z-index:1000;" onclick="hidePopup()">
+    <button onclick="event.stopPropagation(); prevImage();" style="position:absolute; left:20px; top:50%; transform:translateY(-50%); font-size:2rem; background:none; border:none; color:white; cursor:pointer;">&#8592;</button>
+    <img id="popupImage" src="" alt="Popup" style="max-width:80vw; max-height:80vh; display:block; margin:auto;">
+    <button onclick="event.stopPropagation(); nextImage();" style="position:absolute; right:20px; top:50%; transform:translateY(-50%); font-size:2rem; background:none; border:none; color:white; cursor:pointer;">&#8594;</button>
+</div>
+
+<table class="table">
+    <tbody>
+        {% if user_role in ['admin', 'laborant'] %}
+            <tr><th>Inventurni broj:</th><td>{{ equipment.inventory_number }}</td></tr>
+            <tr><th>Opis:</th><td>{{ equipment.description }}</td></tr>
+            <tr><th>Serijski broj:</th><td>{{ equipment.serial_number }}</td></tr>
+            <tr><th>Broj modela:</th><td>{{ equipment.model_number }}</td></tr>
+            <tr><th>Dobavljac:</th><td>{{ equipment.supplier }}</td></tr>
+            <tr><th>Datum nabavke:</th><td>{{ equipment.date_of_acquisition }}</td></tr>
+            <tr><th>Garancija vrijedi do:</th><td>{{ equipment.warranty_until }}</td></tr>
+            <tr><th>Nabavna vrijednost:</th><td>{{ equipment.purchase_value }}</td></tr>
+            <tr><th>Projekat:</th><td>{{ equipment.project }}</td></tr>
+            <tr><th>Servisni period:</th><td>{{ equipment.service_period }}</td></tr>
+            <tr><th>Sljedeci servis:</th><td>{{ equipment.next_service }}</td></tr>
+            <tr><th>Sredstvo duži:</th><td>{{ equipment.labaratory_assistant }}</td></tr>
+            <tr><th>Sredstvo izdaje:</th><td>{{ equipment.professor }}</td></tr>
+            <tr><th>Lokacija sredstva:</th><td>{{ equipment.location }}</td></tr>
+            <tr><th>Kategorija:</th><td>{{ equipment.category }}</td></tr>
+            <tr><th>Napomena:</th><td>{{ equipment.note }}</td></tr>
+        {% else %}
+            <tr><th>Description</th><td>{{ equipment.description }}</td></tr>
+            <tr><th>Professor</th><td>{{ equipment.professor }}</td></tr>
+            <tr><th>Location</th><td>{{ equipment.location }}</td></tr>
+            <tr><th>Availability</th><td>{{ 'Yes' if equipment.available else 'No' }}</td></tr>
+        {% endif %}
+    </tbody>
+</table>
+
+
+
+
+
+<script>
+    const images = {{ equipment.images | map(attribute='filename') | list | tojson | safe }};
+    let index = 0;
+
+    function showPopup(idx) {
+        index = idx;
+        document.getElementById("popupImage").src = "/static/equipment_images/" + images[index];
+        document.getElementById("popup").style.display = "flex";
+    }
+
+    function hidePopup() {
+        document.getElementById("popup").style.display = "none";
+    }
+
+    function nextImage() {
+        index = (index + 1) % images.length;
+        document.getElementById("popupImage").src = "/static/equipment_images/" + images[index];
+    }
+
+    function prevImage() {
+        index = (index - 1 + images.length) % images.length;
+        document.getElementById("popupImage").src = "/static/equipment_images/" + images[index];
+    }
+</script>
+
+{% endblock %}

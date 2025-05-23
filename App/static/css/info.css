@@ -1,0 +1,48 @@
+.carousel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.carousel img {
+    max-height: 300px;
+    object-fit: contain;
+    cursor: pointer;
+}
+
+.arrow {
+    font-size: 2rem;
+    cursor: pointer;
+    user-select: none;
+}
+
+.popup-img {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background-color: rgba(0, 0, 0, 0.8);
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.popup-img img {
+    max-height: 90%;
+    max-width: 90%;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 30px;
+}
+
+.table th,
+.table td {
+    padding: 10px;
+    border: 1px solid #ccc;
+    text-align: left;
+}

@@ -1,0 +1,50 @@
+{# templates/browse/browse_equipment.html #}
+{% extends "base.html" %}
+{% block title %}Pregled opreme{% endblock %}
+{% import "browse/browse_macro.html" as macros %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/browse.css') }}">
+{% endblock %}
+
+{% block content %}
+<br>
+<h1>Lista opreme</h1>
+
+{{ macros.search_bar(url_for('equipment_bp.browse_equipment'), search) }}
+
+{% if search %}
+    <p>Rezultati pretrage za: <strong>{{ search }}</strong></p>
+{% endif %}
+
+<table>
+    <thead>
+        <tr>
+            <th>Oprema</th>
+            <th>Serijski broj</th>
+            <th>Dostupnost</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for equipment in equipment_list %}
+        <tr>
+            <td>
+                <a href="{{ url_for('equipment_bp.equipment_detail', equipment_id=equipment.id) }}"
+                   class="text-decoration-none"
+                   style="display: flex; align-items: center; gap: 8px; color: inherit;">
+                    {{ equipment.name }}
+                </a>
+            </td>
+            <td>{{ equipment.serial_number or 'N/A' }}</td>
+            <td>
+                {% if equipment.available %}
+                    <span class="badge bg-success">Da</span>
+                {% else %}
+                    <span class="badge bg-danger">Ne</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
