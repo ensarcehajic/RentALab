@@ -1,22 +1,14 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, session, get_flashed_messages
+from flask import Blueprint, render_template, redirect, url_for, flash, session, request, current_app
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Length, Email, Regexp, EqualTo
 from App.models.database import db, User
 from werkzeug.security import check_password_hash, generate_password_hash
-import os
-#import hashlib  #part of a code for user image
+from flask_mail import Message
+from App.token_utils import generate_confirmation_token, confirm_token
+from App import mail
 
-#def get_gravatar_url(email, size=40):
-#    email = email.strip().lower().encode('utf-8')
-#    gravatar_hash = hashlib.md5(email).hexdigest()
-#    return f"https://www.gravatar.com/avatar/{gravatar_hash}?s={size}&d=identicon"
-#______part of a code for user image______
-
-template_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'templates'))
-static_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'static'))
-
-login_bp = Blueprint('login_bp', __name__, template_folder=template_dir, static_folder=static_dir)
+login_bp = Blueprint('login_bp', __name__, template_folder='../templates', static_folder='../static')
 
 class LoginForm(FlaskForm):
     email = StringField('Email', validators=[
@@ -48,6 +40,7 @@ class RegisterForm(FlaskForm):
     ])
     submit = SubmitField('Register')
 
+# --- Routes ---
 
 @login_bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -63,6 +56,9 @@ def login():
         user = User.query.filter_by(email=email).first()
 
         if user and check_password_hash(user.password, password):
+            if not user.verified:
+                flash('Please verify your email before logging in.', 'warning')
+                return redirect(url_for('login_bp.login'))
             session['user'] = user.email
             session['role'] = user.role
             flash('Login successful!', 'success')
@@ -71,7 +67,6 @@ def login():
             flash('Invalid email or password', 'danger')
 
     return render_template('login.html', form=form)
-
 
 @login_bp.route('/register', methods=['GET', 'POST'])
 def register():
@@ -98,16 +93,40 @@ def register():
             city=city,
             phone_number=phone_number,
             password=generate_password_hash(password),
-            role="student"  
+            role="student",
+            verified=False
         )
         db.session.add(new_user)
         db.session.commit()
-        flash('Registration successful. Please login.', 'success')
+
+        # Send verification email
+        token = generate_confirmation_token(email)
+        verify_link = url_for('login_bp.verify_email', token=token, _external=True)
+        msg = Message("Confirm your email", recipients=[email])
+        msg.html = render_template("verification.html", verify_link=verify_link)
+        mail.send(msg)
+
+        flash('Registration successful. Please check your email to verify your account.', 'info')
         return redirect(url_for('login_bp.login'))
 
     return render_template('register.html', form=form)
 
+@login_bp.route('/verify/<token>')
+def verify_email(token):
+    email = confirm_token(token)
+    if not email:
+        flash("Invalid or expired verification link.", 'danger')
+        return redirect(url_for('login_bp.login'))
 
+    user = User.query.filter_by(email=email).first()
+    if user:
+        user.verified = True
+        db.session.commit()
+        flash("Your email has been verified. You can now log in.", "success")
+    else:
+        flash("User not found.", "danger")
+
+    return redirect(url_for('login_bp.login'))
 
 @login_bp.route('/dashboard')
 def dashboard():
@@ -116,15 +135,12 @@ def dashboard():
         return redirect(url_for('login_bp.login'))
     username = session['user']
     role = session.get('role')
-    return render_template('dashboard.html',username=username, role=role)
-    #gravatar_url = get_gravatar_url(session.get('user'))
-    #return render_template("dashboard.html", gravatar_url=gravatar_url)
-    #____part of a code for user image____
+    return render_template('dashboard.html', username=username, role=role)
 
 @login_bp.route('/logout')
 def logout():
     session.pop('user', None)
-    get_flashed_messages()  # Ovo očisti stare poruke
+    session.pop('role', None)
     flash("You have been logged out.", 'info')
     return redirect(url_for('login_bp.login'))
 

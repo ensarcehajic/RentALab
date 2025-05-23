@@ -2,6 +2,9 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from App.models.database import db, User
 from werkzeug.security import generate_password_hash
+from flask_mail import Mail
+
+mail = Mail()
 
 def create_app():
     app = Flask(__name__)
@@ -9,6 +12,14 @@ def create_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://admin:1234@localhost:5432/rentalab'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+    app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+    app.config['MAIL_PORT'] = 587
+    app.config['MAIL_USE_TLS'] = True
+    app.config['MAIL_USERNAME'] = 'faris.alic@fet.ba'
+    app.config['MAIL_PASSWORD'] = 'pvjagewgyzefbhag'
+    app.config['MAIL_DEFAULT_SENDER'] = 'faris.alic@fet.ba'
+
+    mail.init_app(app)
     db.init_app(app)
 
     with app.app_context():
@@ -46,8 +57,6 @@ def create_app():
         'role': 'student'
     }
 ]
-
-        
         add_users(users)
 
     from .routes.login import login_bp
