@@ -1,7 +1,5 @@
 {% extends "base.html" %}
-
 {% block title %}{{ equipment.name }}{% endblock %}
-
 {% block styles %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/info.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/browse.css') }}">
@@ -72,10 +70,11 @@
             <tr><th>Kategorija:</th><td>{{ equipment.category }}</td></tr>
             <tr><th>Napomena:</th><td>{{ equipment.note }}</td></tr>
         {% else %}
-            <tr><th>Description</th><td>{{ equipment.description }}</td></tr>
-            <tr><th>Professor</th><td>{{ equipment.professor }}</td></tr>
-            <tr><th>Location</th><td>{{ equipment.location }}</td></tr>
-            <tr><th>Availability</th><td>{{ 'Yes' if equipment.available else 'No' }}</td></tr>
+            <tr><th>Serijski broj:</th><td>{{ equipment.serial_number }}</td></tr>
+            <tr><th>Opis</th><td>{{ equipment.description }}</td></tr>
+            <tr><th>Sredstvo duži:</th><td>{{ equipment.labaratory_assistant }}</td></tr>
+            <tr><th>Lokacija</th><td>{{ equipment.location }}</td></tr>
+            <tr><th>Dostupnost</th><td>{{ 'Da' if equipment.available else 'Ne' }}</td></tr>
         {% endif %}
     </tbody>
 </table>
