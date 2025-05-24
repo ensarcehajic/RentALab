@@ -170,3 +170,50 @@ def logout():
 @login_bp.route('/')
 def home():
     return redirect(url_for('login_bp.login'))
+
+@login_bp.route('/forgot-password', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'POST':
+        email = request.form['email']
+        user = User.query.filter_by(email=email).first()
+
+        if user:
+            token = generate_confirmation_token(email)
+            reset_link = url_for('login_bp.reset_password', token=token, _external=True)
+            msg = Message("Reset your password", recipients=[email])
+            msg.html = render_template("reset_email.html", reset_link=reset_link)
+            mail.send(msg)
+            flash("Password reset instructions sent to your email.", "info")
+        else:
+            flash("Email not found.", "danger")
+        return redirect(url_for('login_bp.login'))
+
+    return render_template('forgot_password.html')
+
+@login_bp.route('/reset-password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    email = confirm_token(token, expiration=120)
+    if not email:
+        flash("Invalid or expired password reset link.", 'danger')
+        return redirect(url_for('login_bp.login'))
+
+    if request.method == 'POST':
+        password = request.form['password']
+        confirm = request.form['confirm_password']
+        if password != confirm:
+            flash("Passwords do not match.", 'danger')
+            return render_template('reset_password.html', token=token)
+
+        user = User.query.filter_by(email=email).first()
+        if user:
+            user.password = generate_password_hash(password)
+            db.session.commit()
+            flash("Your password has been updated. Please log in.", 'success')
+            return redirect(url_for('login_bp.login'))
+        else:
+            flash("User not found.", 'danger')
+            return redirect(url_for('login_bp.login'))
+
+    return render_template('reset_password.html', token=token)
+
+
