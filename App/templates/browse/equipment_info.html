@@ -9,6 +9,17 @@
 {% block content %}
 <h1 class="text-center">{{ equipment.name }}</h1>
 
+{% if user_role in ['student', 'professor'] %}
+<div style="display: flex; justify-content: center; align-items: center; gap: 16px; margin-top: 2rem;">
+    <div>
+        <a href="{{ url_for('rented_bp.rent', inv_num=equipment.inventory_number) }}" style="text-decoration: none;">
+            <button type="button" class="iznajmi-dugme" style="height: 40px; width: 120px;">Iznajmi</button>
+        </a>
+    </div>
+</div>
+{% endif %}
+
+
 {% if user_role in ['admin', 'laborant'] %}
 <div style="display: flex; justify-content: center; align-items: center; gap: 16px; margin-top: 2rem;">
     <div>

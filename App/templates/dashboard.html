@@ -24,23 +24,22 @@
         <img src="{{ url_for('static', filename='images/assets.png') }}" alt="Available Assets" />
         <div>
           <h3>AVAILABLE ASSETS</h3>
-          <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry...</p>
+          <p>Browse currently available equipment</p>
         </div>
       </a>
-     {% if role == 'admin' or role == 'laborant' %}
-    <a href="" class="card">
+      <a href="{{ url_for('rented_bp.req_browse') }}" class="card">
         <img src="{{ url_for('static', filename='images/report.png') }}" alt="Currently Rented" />
         <div>
           <h3>CURRENTLY RENTED EQUIPMENT</h3>
-          <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry...</p>
+          <p>Browse currently rented equipment</p>
         </div>
       </a>
-      
+     {% if role == 'admin' or role == 'laborant' %}  
       <a href="{{ url_for('equipment_bp.download_csv') }}" class="card">
         <img src="{{ url_for('static', filename='images/report2.png') }}" alt="Quick Report" />
         <div>
           <h3>QUICK REPORT</h3>
-          <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry...</p>
+          <p>Here you can get a quick report</p>
         </div>
       </a>
     {% endif %} 

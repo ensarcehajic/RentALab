@@ -49,6 +49,17 @@ def create_app():
         'role': 'admin',
         'verified': True
     },
+     {
+        'email': 'aljo@fet.ba',
+        'name': 'Aljo',
+        'surname': 'Mujcic',
+        'address': 'Street 1',
+        'city': 'City',
+        'phone_number': '111-111',
+        'password': 'aljo123',
+        'role': 'professor',
+        'verified': True
+    },
     {
         'email': 'laborant@fet.ba',
         'name': 'Lab',
@@ -79,6 +90,9 @@ def create_app():
 
     from .routes.equipment import equipment_bp
     app.register_blueprint(equipment_bp)
+
+    from .routes.rented import rented_bp
+    app.register_blueprint(rented_bp)
 
     return app
 
