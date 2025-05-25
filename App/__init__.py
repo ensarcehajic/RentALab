@@ -13,7 +13,7 @@ def create_app():
 
     with app.app_context():
         db.create_all()
-
+        '''
         users = [
             {'email': 'admin@example.com', 'username': 'admin', 'password': 'admin123', 'role': 'admin'},
             {'email': 'laborant@example.com', 'username': 'laborant', 'password': 'laborant123', 'role': 'laborant'},
@@ -21,12 +21,15 @@ def create_app():
         ]
         
         add_users(users)
-
+        '''
     from .routes.login import login_bp
     app.register_blueprint(login_bp)
 
     from .routes.equipment import equipment_bp
     app.register_blueprint(equipment_bp)
+    
+    from .routes.rented import rented_bp
+    app.register_blueprint(rented_bp)
 
     return app
 

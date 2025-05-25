@@ -43,15 +43,16 @@
                     <p>{{ form.available.label }}<br>{{ form.available(class="input-field") }}</p>
                     <p>{{ form.note.label }}<br>{{ form.note(rows=3, cols=40, class="input-field") }}</p>                    
                 </div>
-                <div style="position: absolute; left: -9999px; top: -9999px;">
-					<p>{{ form.model_number.label }}<br>{{ form.model_number(class="input-field") }}</p>
-					<p>{{ form.purchase_value.label }}<br>{{ form.purchase_value(class="input-field") }}</p>
-					<p>{{ form.service_period.label }}<br>{{ form.service_period(class="input-field") }}</p>
-					<p>{{ form.next_service.label }}<br>{{ form.next_service(class="input-field") }}</p>
-					<p>{{ form.date_of_acquisition.label }}<br>{{ form.date_of_acquisition(class="input-field") }}</p>
-					<p>{{ form.warranty_until.label }}<br>{{ form.warranty_until(class="input-field") }}</p>
-					<p>{{ form.supplier.label }}<br>{{ form.supplier(class="input-field") }}</p>                    
-				</div>
+                <div style="flex: 1;">
+                    <h2 style="visibility: hidden; margin: 0; padding: 0;">Placeholder to align inputs</h2>
+                    <p>{{ form.model_number.label }}<br>{{ form.model_number(class="input-field") }}</p>
+                    <p>{{ form.purchase_value.label }}<br>{{ form.purchase_value(class="input-field") }}</p>
+                    <p>{{ form.service_period.label }}<br>{{ form.service_period(class="input-field") }}</p>
+                    <p>{{ form.next_service.label }}<br>{{ form.next_service(class="input-field") }}</p>
+                    <p>{{ form.date_of_acquisition.label }}<br>{{ form.date_of_acquisition(class="input-field") }}</p>
+                    <p>{{ form.warranty_until.label }}<br>{{ form.warranty_until(class="input-field") }}</p>
+                    <p>{{ form.supplier.label }}<br>{{ form.supplier(class="input-field") }}</p>                    
+                </div>
             </div>
 
             <!-- Rental Information Column -->

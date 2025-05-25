@@ -27,24 +27,21 @@ class RegisterForm(FlaskForm):
 
 @login_bp.route('/login', methods=['GET', 'POST'])
 def login():
-    if (session.get('user')):
-        return redirect(url_for('login_bp.logout'))
-    form = LoginForm()
-    if form.validate_on_submit():
-        username = form.username.data
-        password = form.password.data
-        
-        user = User.query.filter_by(username=username).first()
-        
-        if user and check_password_hash(user.password, password):
-            session['user'] = user.username
-            session['role'] = user.role
-            flash('Login successful!', 'success')
-            return redirect(url_for('login_bp.dashboard'))
-        else:
-            flash('Invalid username or password', 'danger')
-    
-    return render_template('login.html', form=form)
+    # Bypass login form, always log in as Admin user with password 'admin123'
+    admin_user = User.query.filter_by(name='Admin').first()
+
+    if not admin_user:
+        # Admin user doesn't exist, flash error and show login page
+        flash('Admin user not found in database.', 'danger')
+        form = LoginForm()
+        return render_template('login.html', form=form)
+
+    # For testing, automatically set session as admin user
+    session['user'] = admin_user.name  # or you can use username if exists, here name as per your table
+    session['role'] = admin_user.role
+    flash('Automatically logged in as Admin.', 'success')
+    return redirect(url_for('login_bp.dashboard'))
+
 
 @login_bp.route('/register', methods=['GET', 'POST'])
 def register():
