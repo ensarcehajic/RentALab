@@ -21,7 +21,7 @@ rented_bp = Blueprint('rented_bp', __name__, template_folder=template_dir, stati
 # Rental Form Definition
 class RentedForm(FlaskForm):
     # --- Renters' user-related info ---
-    issued_by_name = StringField("Issuer Name", default="Muris")
+    issued_by_name = StringField("Issuer Name", default="Lab")
     approver_name = SelectField("Approver Name", choices=[], validators=[DataRequired()])
     renter_name = StringField("Renter Name", default="")
     renter_telephone = StringField("Renter Phone", default="")
