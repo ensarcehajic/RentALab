@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+    <meta charset="UTF-8">
+    <title>Sredstvo za naučno istraživački rad</title>
+    <style>
+        body {
+            font-family: "Times New Roman", serif;
+            margin: 40px;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .logo {
+            height: 80px;
+            margin-right: 20px;
+        }
+        .title-block {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .main-title {
+            text-align: center;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        td, th {
+            border: 1px solid black;
+            padding: 6px;
+            vertical-align: top;
+        }
+        .label {
+            font-weight: bold;
+            width: 30%;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" class="logo">
+        <div class="title-block">
+            <div>Univerzitet u Tuzli</div>
+            <div>Bosna i Hercegovina</div>
+        </div>
+    </div>
+
+    <div class="main-title">
+        <p>Sredstvo za NAUČNO ISTRAŽIVAČKI RAD</p>
+    </div>
+
+    <table>
+        <tr><td class="label">Inventurni broj</td><td>{{ equipment.inventory_number }}</td></tr>
+        <tr><td class="label">Naziv sredstva</td><td>{{ equipment.name }}</td></tr>
+        <tr><td class="label">Opis</td><td>{{ equipment.description }}</td></tr>
+        <tr><td class="label">Serijski broj</td><td>{{ equipment.serial_number }}</td></tr>
+        <tr><td class="label">Model broj</td><td>{{ equipment.model_number }}</td></tr>
+        <tr><td class="label">Dobavljač</td><td>{{ equipment.supplier }}</td></tr>
+        <tr><td class="label">Datum nabavke</td><td>{{ equipment.date_of_acquisition }}</td></tr>
+        <tr><td class="label">Garancija do</td><td>{{ equipment.warranty_until }}</td></tr>
+        <tr><td class="label">Nabavna vrijednost</td><td>{{ equipment.purchase_value }}</td></tr>
+        <tr><td class="label">Projekat</td><td>{{ equipment.project }}</td></tr>
+        <tr><td class="label">Servisni period</td><td>{{ equipment.service_period }}</td></tr>
+        <tr><td class="label">Naredni servis</td><td>{{ equipment.next_service }}</td></tr>
+        <tr><td class="label">Sredstvo duži</td><td>{{ equipment.labaratory_assistant }}</td></tr>
+        <tr><td class="label">Lokacija sredstva</td><td>{{ equipment.location }}</td></tr>
+        <tr><td class="label">Napomena</td><td>{{ equipment.note }}</td></tr>
+    </table>
+    <script>
+      window.onload = function() {
+        window.print();  
+      };
+    </script>
+
+</body>
+</html>

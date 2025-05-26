@@ -13,6 +13,7 @@ from datetime import datetime
 import csv,psycopg2
 from io import StringIO
 from werkzeug.utils import secure_filename
+from weasyprint import HTML
 
 
 template_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'templates'))
@@ -211,28 +212,21 @@ def dodaj_opremu():
 
     form = OpremaForm()
 
-    # --- RUKOVANJE CSV UPLOADOM ---
     if request.method == 'POST' and 'file' in request.files:
         file = request.files['file']
         if file and file.filename.endswith('.csv'):
-            # Parsiranje CSV-a
             csv_file = csv.reader(file.stream.read().decode('utf-8').splitlines())
-            next(csv_file)  # preskoči header
-
+            next(csv_file) 
             for row in csv_file:
                 if len(row) != 17:
-                    continue  # preskoči redove koji nemaju točno 17 stupaca
-
-                # raspakiraj sve vrijednosti
+                    continue  
                 (inventory_number, name, description, serial_number, model_number, supplier, date_of_acquisition,
                  warranty_until, purchase_value, project, service_period, next_service, labaratory_assistant,
                  location, available, note) = row + [None] * (18 - len(row))  # napomena: moraš uskladiti broj stupaca
 
-                # provjeri postoji li oprema s istim inventory_number ili name (po želji)
                 postoji = Oprema.query.filter_by(inventory_number=inventory_number).first()
                 if postoji:
-                    continue  # preskoči ako već postoji
-
+                    continue
                 novi = Oprema(
                     inventory_number=inventory_number,
                     name=name,
@@ -255,7 +249,6 @@ def dodaj_opremu():
             db.session.commit()
             return redirect(url_for('login_bp.dashboard'))
 
-    # --- RUKOVANJE FORMOM ---
     if form.validate_on_submit():
         novi_unos = Oprema(
             inventory_number=form.inventory_number.data,
@@ -372,3 +365,19 @@ def izbrisi_opremu(oprema_id):
 
     flash('Equipment and associated images have been deleted.', 'success')
     return redirect(url_for('equipment_bp.back_to_dashboard'))
+
+
+@equipment_bp.route("/equipment/<int:id>/print")
+def print_equipment(id):
+    equipment = db.session.get(Oprema, id)
+    return render_template("browse/export/print_equipment.html", equipment=equipment)
+
+@equipment_bp.route("/equipment/<int:id>/pdf")
+def pdf(id):
+    equipment = db.session.get(Oprema, id)
+    rendered = render_template("browse/export/print_equipment.html", equipment=equipment)
+    pdf = HTML(string=rendered, base_url=request.base_url).write_pdf()
+    response = make_response(pdf)
+    response.headers["Content-Type"] = "application/pdf"
+    response.headers["Content-Disposition"] = f"inline; filename=equipment_{id}.pdf"
+    return response
