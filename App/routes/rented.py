@@ -21,7 +21,7 @@ rented_bp = Blueprint('rented_bp', __name__, template_folder=template_dir, stati
 # Rental Form Definition
 class RentedForm(FlaskForm):
     # --- Renters' user-related info ---
-    issued_by_name = StringField("Issuer Name", default="Lab")
+    issued_by_name = StringField("Issuer Name", default="")
     approver_name = SelectField("Approver Name", choices=[], validators=[DataRequired()])
     renter_name = StringField("Renter Name", default="")
     renter_telephone = StringField("Renter Phone", default="")
@@ -70,7 +70,6 @@ class RentedForm(FlaskForm):
 #WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING
 #WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING
 
-#Route for renting equipment that will be put in the database
 @rented_bp.route('/rent/<inv_num>', methods=['GET', 'POST'])
 def rent(inv_num):
     if 'user' not in session:
@@ -78,28 +77,31 @@ def rent(inv_num):
 
     form = RentedForm()
 
-    #ensuring only specific fileds can be changed and not everything
+    # Only allow specific fields to be edited
     fields_to_unlock = ['approver_name', 'project', 'subject', 'note_rent', 'submit']
-    
     for field_name, field in form._fields.items():
         if field_name not in fields_to_unlock:
             field.render_kw = field.render_kw or {}
             field.render_kw['readonly'] = True
 
-    # Populate approver_name choices with professors
+    # Get all professors and use ID as value, name as label
     professors = User.query.filter(User.role.ilike('professor')).all()
-    form.approver_name.choices = [(prof.name, prof.name) for prof in professors]
+    form.approver_name.choices = [(str(prof.id), f"{prof.name} {prof.surname}") for prof in professors]
 
-    # Load equipment by inventory number from URL param
+    # Load equipment
     equipment = Oprema.query.filter_by(inventory_number=inv_num).first()
-
     if not equipment:
-        # If equipment not found, redirect or show error
         flash(f"Equipment with inventory number {inv_num} not found.", "danger")
-        return redirect(url_for('login_bp.dashboard'))  # Replace with actual browsing route
+        return redirect(url_for('login_bp.dashboard'))
 
-    # Autofill equipment fields on GET
+    # Get current user as renter
+    current_user = User.query.filter(User.email.ilike(session['user'])).first()
+
+    # Get the one and only laborant as issuer
+    issuer = User.query.filter(User.role.ilike('laborant')).first()
+
     if request.method == 'GET':
+        # Equipment fields
         form.inventory_number.data = equipment.inventory_number
         form.name.data = equipment.name
         form.description.data = equipment.description
@@ -113,42 +115,45 @@ def rent(inv_num):
         form.next_service.data = equipment.next_service
         form.available.data = equipment.available
 
-        # Autofill renter info from session user
-        current_user = User.query.filter(User.email.ilike(session['user'])).first()
         if current_user:
-            form.renter_name.data = current_user.name
-            form.renter_telephone.data = current_user.phone_number  # Adjust field names if needed
+            form.renter_name.data = f"{current_user.name} {current_user.surname}"
+            form.renter_telephone.data = current_user.phone_number
             form.renter_address.data = current_user.address
+
+        # Show issuer's name for display only
+        if issuer:
+            form.issued_by_name.data = f"{issuer.name} {issuer.surname}"
 
     error_message = None
 
-    #validate and test every posibility then if everything is correct add it to the DB
     if form.validate_on_submit():
-        renter = User.query.filter(User.name.ilike(form.renter_name.data.strip())).first()
-        approver = User.query.filter(User.name.ilike(form.approver_name.data.strip())).first()
-        issuer = User.query.filter(User.name.ilike(form.issued_by_name.data.strip())).first()
+        # Use IDs directly
+        renter_id = current_user.id if current_user else None
+        approver_id = int(form.approver_name.data)  # selected professor's ID
+        issuer_id = issuer.id if issuer else None
+        equipment_id = equipment.id if equipment else None
 
-        # Confirm equipment again from inventory_number in form (security check)
-        equipment = Oprema.query.filter_by(inventory_number=form.inventory_number.data).first()
+        approver = User.query.get(approver_id)
 
-        if not renter:
-            error_message = 'Renter name does not exist.'
+        # Validate roles
+        if not current_user:
+            error_message = 'Renter not found (session issue).'
         elif not approver:
-            error_message = 'Approver name does not exist.'
+            error_message = 'Approver not found.'
         elif approver.role.lower() != 'professor':
             error_message = 'Approver must have the role "professor".'
         elif not issuer:
-            error_message = 'Issuer name does not exist.'
+            error_message = 'Issuer (laborant) not found.'
         elif issuer.role.lower() != 'laborant':
             error_message = 'Issuer must have the role "laborant".'
         elif not equipment:
-            error_message = 'Equipment inventory number does not exist.'
+            error_message = 'Equipment not found.'
         else:
             rented_item = Rented(
-                renter_id=renter.id,
-                approver_id=approver.id,
-                issued_by_id=issuer.id,
-                inventory_number_id=equipment.id,
+                renter_id=renter_id,
+                approver_id=approver_id,
+                issued_by_id=issuer_id,
+                inventory_number_id=equipment_id,
                 start_date=form.date_rent_start.data,
                 end_date=form.date_rent_end.data,
                 project=form.project.data,
@@ -159,11 +164,15 @@ def rent(inv_num):
             db.session.add(rented_item)
             db.session.commit()
             return redirect(url_for('login_bp.dashboard'))
+
     else:
-        #for testing and just in case it breaks in the future
         print("Form did NOT validate rent")
-        print(form.errors)  # This will show which fields caused validation errors
+        print(form.errors)
+
     return render_template('rent.html', form=form, error_message=error_message)
+
+
+
 
 
 #shows all "requests" aka rents in the browser
@@ -197,42 +206,18 @@ def request_view(rented_id):
         return redirect(url_for('login_bp.login'))
 
     form = RentedForm()
-
-    # Fetch the rented row by id, or 404 if not found
     rented = Rented.query.get_or_404(rented_id)
-
-    # Fetch related equipment using the foreign key
     equipment = Oprema.query.get(rented.inventory_number_id)
-
-    # Fetch users related to this rental (issuer, approver, renter)
     issuer = User.query.get(rented.issued_by_id)
     approver = User.query.get(rented.approver_id)
     renter = User.query.get(rented.renter_id)
 
-    current_user = User.query.filter_by(name=session['user']).first()
+    # Get current logged-in user
+    current_user = User.query.filter_by(email=session['user']).first()
 
-    # By default, lock all fields except status and submit
-    fields_to_unlock = ['status', 'submit']
-
-    # If current user is NOT the approver or an admin, lock everything including status and disable submit button
-    if not current_user or (current_user.id != approver.id and current_user.role.lower() != 'admin'):
-        # Lock all fields
-        for field_name, field in form._fields.items():
-            field.render_kw = field.render_kw or {}
-            field.render_kw['readonly'] = True
-            # Disable submit button (if it exists)
-            if field_name == 'submit':
-                field.render_kw['disabled'] = True
-    else:
-        # User is approver or admin — unlock status and submit only
-        for field_name, field in form._fields.items():
-            if field_name not in fields_to_unlock:
-                field.render_kw = field.render_kw or {}
-                field.render_kw['readonly'] = True
-    
-    #had a POST bug for the approver_name so had to do it here otherwise takes the data and fills out everything
+    # Fix for approver_name POST bug
     form.approver_name.choices = [(approver.name, approver.name)]
-    
+
     if request.method == 'GET':
         form.inventory_number.data = equipment.inventory_number or ''
         form.name.data = equipment.name or ''
@@ -247,45 +232,48 @@ def request_view(rented_id):
         form.next_service.data = equipment.next_service
         form.available.data = equipment.available if equipment.available is not None else 0
         form.note.data = equipment.note or ''
-    
+
         form.date_rent_start.data = rented.start_date
         form.date_rent_end.data = rented.end_date
         form.project.data = rented.project or ''
         form.subject.data = rented.subject or ''
         form.status.data = rented.status or 'pending'
         form.note_rent.data = rented.note or ''
-    
+
         form.issued_by_name.data = issuer.name or 'Lab'
-        #form.approver_name.choices = [(approver.name, approver.name)] DONE ABOVE CUZ POST ERROR
         form.renter_name.data = renter.name or ''
         form.renter_telephone.data = renter.phone_number or ''
         form.renter_address.data = renter.address or ''
- 
-    #validate and logic for the status button in order to ensure things run smothly
-    if form.validate_on_submit():
-        prev_status = rented.status.strip().lower()
-        new_status = form.status.data.strip().lower()
-        
-        # Status logic:
-        if prev_status == 'pending' and new_status == 'approved':
-            rented.status = 'Approved'
-            rented.start_date = datetime.utcnow()
-        
-        elif prev_status == 'pending' and new_status == 'rejected':
-            db.session.delete(rented)
-            db.session.commit()
-            return redirect(url_for('login_bp.dashboard'))
-        
-        elif prev_status == 'approved' and new_status == 'ended':
-            rented.status = 'Ended'
-            rented.end_date = datetime.utcnow()
 
-    
-        db.session.commit()
-        return redirect(url_for('rented_bp.req_browse'))
+    if form.validate_on_submit():
+        # Only allow submit if current user is approver or admin
+        if current_user and (current_user.id == approver.id or (current_user.role and current_user.role.lower() == 'admin')):
+            prev_status = (rented.status or '').strip().lower()
+            new_status = (form.status.data or '').strip().lower()
+
+            if prev_status == 'pending' and new_status == 'approved':
+                rented.status = 'Approved'
+                rented.start_date = datetime.utcnow()
+
+            elif prev_status == 'pending' and new_status == 'rejected':
+                db.session.delete(rented)
+                db.session.commit()
+                return redirect(url_for('login_bp.dashboard'))
+
+            elif prev_status == 'approved' and new_status == 'ended':
+                rented.status = 'Ended'
+                rented.end_date = datetime.utcnow()
+
+            db.session.commit()
+            return redirect(url_for('rented_bp.req_browse'))
+        else:
+            return redirect(url_for('rented_bp.req_browse'))
     else:
         print("Form did NOT validate request")
-        print(form.errors)  # This will show which fields caused validation errors
-    return render_template('request.html', form=form)
+        print(form.errors)
+
+    return render_template('request.html', form=form, user_role=session.get('role'))
+
+
 
 

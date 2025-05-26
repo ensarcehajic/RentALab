@@ -8,7 +8,7 @@
 
 {% block content %}
 <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="logo">
-<h1>Enter Equipment Rental Information:</h1>
+<h1>Equipment Rental Request Details</h1>
 
 {% if error_message %}
   <div style="color: white; background-color: #d9534f; padding: 10px; border-radius: 5px; margin-bottom: 1em; font-weight: bold;">
@@ -43,7 +43,12 @@
                     <p>{{ form.available.label }}<br>{{ form.available(class="input-field") }}</p>
                     <p>{{ form.note.label }}<br>{{ form.note(rows=3, cols=40, class="input-field") }}</p>                    
                 </div>
+
+                {% if user_role == 'student' %}
+                <div style="position: absolute; left: -9999px; top: -9999px;">
+                {% else %}
                 <div style="flex: 1;">
+                {% endif %}
                     <h2 style="visibility: hidden; margin: 0; padding: 0;">Placeholder to align inputs</h2>
                     <p>{{ form.model_number.label }}<br>{{ form.model_number(class="input-field") }}</p>
                     <p>{{ form.purchase_value.label }}<br>{{ form.purchase_value(class="input-field") }}</p>
