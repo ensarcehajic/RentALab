@@ -18,6 +18,11 @@
           <button class="dashboard-button">Dashboard</button>
         </a>
         {% endif %}
+        {% if role == 'admin' %}
+         <a href="{{ url_for('admin_bp.add_staff') }}">
+          <button class="dashboard-button">Add Teaching staff</button>
+        </a>
+        {% endif %}
       </div>
 
       <div class="header-right">

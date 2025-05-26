@@ -80,6 +80,9 @@ def create_app():
     from .routes.equipment import equipment_bp
     app.register_blueprint(equipment_bp)
 
+    from .routes.admin import admin_bp
+    app.register_blueprint(admin_bp)
+
     return app
 
 
