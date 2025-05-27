@@ -7,7 +7,8 @@ from wtforms import (
 from wtforms.validators import DataRequired, Optional
 from datetime import datetime
 import os
-
+from flask_mail import Message
+from App import mail
 from App.models.database import db, Oprema, Rented, User
 
 # Define paths for templates and static files
@@ -69,7 +70,6 @@ class RentedForm(FlaskForm):
 #placeholderi kao "professor" za roll i "Lab" za ime laboranta se moraju promjeniti u zavrsnoj aplikaciji
 #WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING
 #WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING
-
 @rented_bp.route('/rent/<inv_num>', methods=['GET', 'POST'])
 def rent(inv_num):
     if 'user' not in session:
@@ -164,14 +164,39 @@ def rent(inv_num):
             )
             db.session.add(rented_item)
             db.session.commit()
+
+            student_name = f"{current_user.name} {current_user.surname}"
+            equipment_name = equipment.name
+            prof_email = approver.email
+
+            project = form.project.data
+            subject = form.subject.data
+            note = form.note_rent.data
+
+            msg = Message(
+                subject="Zahtjev za odobrenje iznajmljivanja opreme",
+                recipients=[prof_email]
+            )
+
+            msg.body = (
+                f"Poštovani/na {approver.name} {approver.surname},\n\n"
+                f"Student {student_name} je zatražio odobrenje za iznajmljivanje opreme: \"{equipment_name}\".\n\n"
+                f"Detalji zahtjeva:\n"
+                f"• Projekat: {project}\n"
+                f"• Predmet: {subject}\n"
+                f"• Napomena: {note}\n\n"
+                f"Molimo Vas da pristupite sistemu kako biste odobrili ili odbili zahtjev.\n\n"
+                "Hvala."
+            )
+            mail.send(msg)
+
             return redirect(url_for('login_bp.dashboard'))
 
     else:
         print("Form did NOT validate rent")
-        print(form.errors)
+        print(form.errors)  
 
     return render_template('rent.html', form=form, error_message=error_message)
-
 
 
 
@@ -213,14 +238,10 @@ def request_view(rented_id):
     approver = User.query.get(rented.approver_id)
     renter = User.query.get(rented.renter_id)
 
-    # Trenutni korisnik
     current_user = User.query.filter_by(email=session['user']).first()
-
-    # Postavljanje svih profesora za SelectField
     professors = User.query.filter(User.role.ilike('professor')).all()
     form.approver_name.choices = [(str(prof.id), f"{prof.name} {prof.surname}") for prof in professors]
 
-    # Unlock samo relevantna polja
     fields_to_unlock = ['status', 'submit']
     for field_name, field in form._fields.items():
         if field_name not in fields_to_unlock:
@@ -249,7 +270,6 @@ def request_view(rented_id):
         form.status.data = rented.status or 'pending'
         form.note_rent.data = rented.note or ''
 
-        # Ostali podaci
         form.issued_by_name.data = f"{issuer.name} {issuer.surname}" if issuer else 'Lab'
         form.renter_name.data = f"{renter.name} {renter.surname}" if renter else ''
         form.renter_telephone.data = renter.phone_number or ''
@@ -257,7 +277,6 @@ def request_view(rented_id):
         form.approver_name.data = str(approver.id) if approver else ''
 
     if form.validate_on_submit():
-        # Dozvoli izmjene samo ako je trenutni korisnik odobravatelj ili admin
         if current_user and (
             current_user.id == approver.id or 
             (current_user.role and current_user.role.lower() == 'admin')
@@ -268,8 +287,11 @@ def request_view(rented_id):
             if prev_status == 'pending' and new_status == 'approved':
                 rented.status = 'Approved'
                 rented.start_date = datetime.utcnow()
-
+                if equipment:
+                    equipment.available = 0
             elif prev_status == 'pending' and new_status == 'rejected':
+                if equipment:
+                    equipment.available = 1
                 db.session.delete(rented)
                 db.session.commit()
                 return redirect(url_for('login_bp.dashboard'))
@@ -277,6 +299,8 @@ def request_view(rented_id):
             elif prev_status == 'approved' and new_status == 'ended':
                 rented.status = 'Ended'
                 rented.end_date = datetime.utcnow()
+                if equipment:
+                    equipment.available = 1
 
             db.session.commit()
             return redirect(url_for('rented_bp.req_browse'))
@@ -289,6 +313,3 @@ def request_view(rented_id):
             print(form.errors)
 
     return render_template('request.html', form=form, user_role=session.get('role'))
-
-
-

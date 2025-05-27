@@ -26,25 +26,29 @@
         </tr>
     </thead>
     <tbody>
-        {% for equipment in equipment_list %}
-        <tr>
-            <td>
+    {% for equipment in equipment_list %}
+    <tr>
+        <td>
+            {% if equipment.available %}
                 <a href="{{ url_for('equipment_bp.equipment_detail', equipment_id=equipment.id) }}"
-                   class="text-decoration-none"
-                   style="display: flex; align-items: center; gap: 8px; color: inherit;">
+                   style="display: block; width: 100%; height: 100%; text-decoration: none; color: inherit;">
                     {{ equipment.name }}
                 </a>
-            </td>
-            <td>{{ equipment.serial_number or 'N/A' }}</td>
-            <td>
-                {% if equipment.available %}
-                    <span class="badge bg-success">Da</span>
-                {% else %}
-                    <span class="badge bg-danger">Ne</span>
-                {% endif %}
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
+            {% else %}
+                {{ equipment.name }}
+            {% endif %}
+        </td>
+        <td>{{ equipment.serial_number or 'N/A' }}</td>
+        <td>
+            {% if equipment.available %}
+                <span class="badge bg-success">Da</span>
+            {% else %}
+                <span class="badge bg-danger">Ne</span>
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</tbody>
+
 </table>
 {% endblock %}
