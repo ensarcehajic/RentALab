@@ -360,7 +360,6 @@ def izmijeni_opremu(oprema_id):
 
         db.session.commit()
         flash('Equipment updated successfully.', 'success')
-        get_flashed_messages()
         return redirect(url_for('equipment_bp.equipment_detail', equipment_id=oprema.id))
 
     return render_template("dodavanje_opreme.html", form=form, edit_mode=True, oprema=oprema, images=oprema.images)
@@ -385,5 +384,4 @@ def izbrisi_opremu(oprema_id):
     db.session.commit()
 
     flash('Equipment and associated images have been deleted.', 'success')
-    get_flashed_messages()
     return redirect(url_for('equipment_bp.back_to_dashboard'))
