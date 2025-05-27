@@ -162,6 +162,9 @@ def create_app():
     from .routes.profile import profile_bp
     app.register_blueprint(profile_bp)
     
+    from .routes.rented import rented_bp
+    app.register_blueprint(rented_bp)
+
     return app
 
 
