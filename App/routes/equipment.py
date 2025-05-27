@@ -1,5 +1,5 @@
 from App.models.database import db, Oprema, equipmentImage, Rented, User
-from flask import Blueprint,Flask, render_template, render_template_string, request,flash,  redirect, url_for,session,make_response, current_app
+from flask import Blueprint,Flask, render_template, render_template_string, request,flash,  redirect, url_for,session,make_response, current_app, get_flashed_messages
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
@@ -384,4 +384,5 @@ def izbrisi_opremu(oprema_id):
     db.session.commit()
 
     flash('Equipment and associated images have been deleted.', 'success')
+    get_flashed_messages()
     return redirect(url_for('equipment_bp.back_to_dashboard'))
