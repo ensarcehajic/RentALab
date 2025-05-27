@@ -49,6 +49,7 @@ class RegisterForm(FlaskForm):
 def login():
     if session.get('user'):
         flash('You are already logged in.', 'info')
+        get_flashed_messages()
         return redirect(url_for('login_bp.dashboard'))
 
     form = LoginForm()
@@ -66,7 +67,7 @@ def login():
             session['user'] = user.email
             session['role'] = user.role
             flash('Login successful!', 'success')
-            get_flashed_messages(with_categories=True)
+            get_flashed_messages()
             return redirect(url_for('login_bp.dashboard'))
         else:
             flash('Invalid email or password', 'danger')

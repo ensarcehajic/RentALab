@@ -34,7 +34,7 @@
         <!--<img src="{{ gravatar_url }}" alt="User" class="user-avatar" /> --> 
         <!--Code for user image - from an email, see file login.py-->
 
-        <span class="user-name">{{ session.get('user', 'Gost') }}</span>
+        <a href="{{ url_for('profile_bp.edit_profile') }}" class="user-name">{{ session.get('user', 'Gost') }}</a>
       </div>
     </header>
 

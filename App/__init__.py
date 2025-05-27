@@ -83,6 +83,9 @@ def create_app():
     from .routes.admin import admin_bp
     app.register_blueprint(admin_bp)
 
+    from .routes.profile import profile_bp
+    app.register_blueprint(profile_bp)
+    
     return app
 
 
