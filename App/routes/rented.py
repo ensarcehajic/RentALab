@@ -95,7 +95,8 @@ def rent(inv_num):
         return redirect(url_for('login_bp.dashboard'))
 
     # Get current user as renter
-    current_user = User.query.filter(User.email.ilike(session['user'])).first()
+    current_user = db.session.query(User).filter_by(email=session['user']).first()
+
 
     # Get the one and only laborant as issuer
     issuer = User.query.filter(User.role.ilike('laborant')).first()
@@ -212,11 +213,19 @@ def request_view(rented_id):
     approver = User.query.get(rented.approver_id)
     renter = User.query.get(rented.renter_id)
 
-    # Get current logged-in user
+    # Trenutni korisnik
     current_user = User.query.filter_by(email=session['user']).first()
 
-    # Fix for approver_name POST bug
-    form.approver_name.choices = [(approver.name, approver.name)]
+    # Postavljanje svih profesora za SelectField
+    professors = User.query.filter(User.role.ilike('professor')).all()
+    form.approver_name.choices = [(str(prof.id), f"{prof.name} {prof.surname}") for prof in professors]
+
+    # Unlock samo relevantna polja
+    fields_to_unlock = ['status', 'submit']
+    for field_name, field in form._fields.items():
+        if field_name not in fields_to_unlock:
+            field.render_kw = field.render_kw or {}
+            field.render_kw['readonly'] = True
 
     if request.method == 'GET':
         form.inventory_number.data = equipment.inventory_number or ''
@@ -240,14 +249,19 @@ def request_view(rented_id):
         form.status.data = rented.status or 'pending'
         form.note_rent.data = rented.note or ''
 
-        form.issued_by_name.data = issuer.name or 'Lab'
-        form.renter_name.data = renter.name or ''
+        # Ostali podaci
+        form.issued_by_name.data = f"{issuer.name} {issuer.surname}" if issuer else 'Lab'
+        form.renter_name.data = f"{renter.name} {renter.surname}" if renter else ''
         form.renter_telephone.data = renter.phone_number or ''
         form.renter_address.data = renter.address or ''
+        form.approver_name.data = str(approver.id) if approver else ''
 
     if form.validate_on_submit():
-        # Only allow submit if current user is approver or admin
-        if current_user and (current_user.id == approver.id or (current_user.role and current_user.role.lower() == 'admin')):
+        # Dozvoli izmjene samo ako je trenutni korisnik odobravatelj ili admin
+        if current_user and (
+            current_user.id == approver.id or 
+            (current_user.role and current_user.role.lower() == 'admin')
+        ):
             prev_status = (rented.status or '').strip().lower()
             new_status = (form.status.data or '').strip().lower()
 
@@ -267,13 +281,14 @@ def request_view(rented_id):
             db.session.commit()
             return redirect(url_for('rented_bp.req_browse'))
         else:
+            flash("Niste ovlašteni da izvršite ovu akciju.", "danger")
             return redirect(url_for('rented_bp.req_browse'))
     else:
-        print("Form did NOT validate request")
-        print(form.errors)
+        if request.method == 'POST':
+            print("Form did NOT validate request")
+            print(form.errors)
 
     return render_template('request.html', form=form, user_role=session.get('role'))
-
 
 
 
