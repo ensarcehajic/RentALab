@@ -215,23 +215,36 @@ def dodaj_opremu():
     if request.method == 'POST' and 'file' in request.files:
         file = request.files['file']
         if file and file.filename.endswith('.csv'):
-            # Parsiranje CSV-a
+            # Parsiranje CSV-a iz fajla
             csv_file = csv.reader(file.stream.read().decode('utf-8').splitlines())
             next(csv_file)  # preskoči header
 
             for row in csv_file:
-                if len(row) != 17:
-                    continue  # preskoči redove koji nemaju točno 17 stupaca
+                # Očekujemo tačno 16 kolona, kao u download_csv headeru
+                if len(row) != 16:
+                    continue  # preskoči redove koji nemaju tačno 16 kolona
 
-                # raspakiraj sve vrijednosti
-                (inventory_number, name, description, serial_number, model_number, supplier, date_of_acquisition,
-                 warranty_until, purchase_value, project, service_period, next_service, labaratory_assistant,
-                 location, available, note) = row + [None] * (18 - len(row))  # napomena: moraš uskladiti broj stupaca
+                (
+                    inventory_number, name, description, serial_number, model_number, supplier,
+                    date_of_acquisition, warranty_until, purchase_value, project, service_period,
+                    next_service, labaratory_assistant, location, available, note
+                ) = row
 
-                # provjeri postoji li oprema s istim inventory_number ili name (po želji)
+                # Provjeri postoji li već oprema s istim inventory_number
                 postoji = Oprema.query.filter_by(inventory_number=inventory_number).first()
                 if postoji:
                     continue  # preskoči ako već postoji
+
+                # Konvertuj datume i ostale tipove
+                try:
+                    date_of_acquisition_dt = datetime.strptime(date_of_acquisition, '%Y-%m-%d').date() if date_of_acquisition else None
+                    warranty_until_dt = datetime.strptime(warranty_until, '%Y-%m-%d').date() if warranty_until else None
+                    next_service_dt = datetime.strptime(next_service, '%Y-%m-%d').date() if next_service else None
+                    purchase_value_int = int(purchase_value) if purchase_value.isdigit() else 0
+                    available_int = int(available) if available.isdigit() else 0
+                except Exception as e:
+                    # Ako nešto ne valja u konverziji, preskoči red
+                    continue
 
                 novi = Oprema(
                     inventory_number=inventory_number,
@@ -240,15 +253,15 @@ def dodaj_opremu():
                     serial_number=serial_number,
                     model_number=model_number,
                     supplier=supplier,
-                    date_of_acquisition=date_of_acquisition,
-                    warranty_until=warranty_until,
-                    purchase_value=purchase_value,
+                    date_of_acquisition=date_of_acquisition_dt,
+                    warranty_until=warranty_until_dt,
+                    purchase_value=purchase_value_int,
                     project=project,
                     service_period=service_period,
-                    next_service=next_service,
+                    next_service=next_service_dt,
                     labaratory_assistant=labaratory_assistant,
                     location=location,
-                    available=int(available) if available.isdigit() else 0,
+                    available=available_int,
                     note=note
                 )
                 db.session.add(novi)
