@@ -1,6 +1,6 @@
 {# templates/browse/browse_equipment.html #}
 {% extends "base.html" %}
-{% block title %}Pregled opreme{% endblock %}
+{% block title %}Browse equipment{% endblock %}
 {% import "browse/browse_macro.html" as macros %}
 
 {% block styles %}
@@ -9,7 +9,7 @@
 
 {% block content %}
 <br>
-<h1>Lista opreme</h1>
+<h1>Equipment</h1>
 
 {{ macros.search_bar(url_for('equipment_bp.browse_equipment'), search) }}
 
@@ -20,9 +20,9 @@
 <table>
     <thead>
         <tr>
-            <th>Oprema</th>
-            <th>Serijski broj</th>
-            <th>Dostupnost</th>
+            <th>Name</th>
+            <th>Serial number</th>
+            <th>Available</th>
         </tr>
     </thead>
     <tbody>
@@ -41,9 +41,9 @@
         <td>{{ equipment.serial_number or 'N/A' }}</td>
         <td>
             {% if equipment.available %}
-                <span class="badge bg-success">Da</span>
+                <span class="badge bg-success">Yes</span>
             {% else %}
-                <span class="badge bg-danger">Ne</span>
+                <span class="badge bg-danger">No</span>
             {% endif %}
         </td>
     </tr>
