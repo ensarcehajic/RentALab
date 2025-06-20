@@ -1,0 +1,5 @@
+INV001,Oscilloscope,Signal measurement device,SN12345,MDL001,Supplier A,2023-01-10,2026-01-10,1200,Project X,12 months,2024-01-10,John Doe,Lab A,1,Used occasionally
+INV002,Multimeter,Voltage and current tester,SN23456,MDL002,Supplier B,2022-05-12,2025-05-12,400,Project Y,6 months,2023-11-12,Jane Smith,Lab B,1,Brand new
+INV003,Power Supply,DC voltage source,SN34567,MDL003,Supplier C,2021-03-15,2024-03-15,800,Project Z,24 months,2025-03-15,Mark Johnson,Lab C,0,Needs calibration
+INV004,Function Generator,Generates signals,SN45678,MDL004,Supplier D,2022-08-01,2025-08-01,950,Project Q,12 months,2023-08-01,Alice Brown,Lab D,1,In good condition
+INV005,Soldering Station,For circuit assembly,SN56789,MDL005,Supplier E,2020-11-20,2023-11-20,300,Project W,6 months,2021-11-20,Bob Martin,Lab E,0,Old but working

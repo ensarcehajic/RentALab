@@ -164,8 +164,12 @@ def dashboard():
 
 @login_bp.route('/logout')
 def logout():
-    get_flashed_messages()
+    # Explicitly remove all authentication-related session variables
     session.pop('user', None)
+    session.pop('role', None)
+    session.pop('_fresh', None)  
+    session.pop('_id', None)     
+    session.clear()               
     flash("You have been logged out.", 'info')
     return redirect(url_for('login_bp.login'))
 
