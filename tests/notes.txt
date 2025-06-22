@@ -1,0 +1,13 @@
+prije pokretanja test_equipment.py potrebno je pokrenuti ovu liniju u terminalu(ne u psql shellu):
+psql -U admin -h localhost -d postgres -c "CREATE DATABASE rentalab_test;"
+Kreira bazu za testove
+prilikom svakog novog pokretanja testa preporucuje se brisanje baze:
+psql -U admin -h localhost -d postgres -c "DROP DATABASE IF EXISTS rentalab_test;"
+psql -U admin -h localhost -d postgres -c "CREATE DATABASE rentalab_test;"
+
+test_equipment.py se pokrece sa:
+pytest tests/test_equipment.py
+
+moze se dodati:
+-v za detaljniji debugging
+-s da sve pokaze
