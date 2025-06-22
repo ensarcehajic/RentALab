@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, session, request, current_app,get_flashed_messages
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField  
 from wtforms.validators import DataRequired, Length, Email, Regexp, EqualTo
 from App.models.database import db, User
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -88,6 +88,12 @@ def register():
         return redirect(url_for('login_bp.dashboard'))
     form = RegisterForm()
     if form.validate_on_submit():
+
+        # Check if checkbox is ticked
+        if 'agree' not in request.form:
+            flash('You must agree to the Terms of Service and EULA to register.', 'danger')
+            return redirect(url_for('login_bp.register'))
+
         email = form.email.data
         phone_number = form.phone_number.data
         password = form.password.data
@@ -135,6 +141,15 @@ def register():
                 flash(error, 'danger')
 
     return render_template('register.html', form=form)
+
+
+@login_bp.route('/tos')
+def tos():
+    return render_template('tos.html')
+
+@login_bp.route('/eula')
+def eula():
+    return render_template('eula.html')
 
 @login_bp.route('/verify/<token>')
 def verify_email(token):

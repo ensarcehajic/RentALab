@@ -287,20 +287,22 @@ def request_view(rented_id):
             if prev_status == 'pending' and new_status == 'approved':
                 rented.status = 'Approved'
                 rented.start_date = datetime.utcnow()
-                if equipment:
-                    equipment.available = 0
+                if equipment and equipment.available > 0:
+                    equipment.available -= 1  # reduce available count by one
+            
             elif prev_status == 'pending' and new_status == 'rejected':
                 if equipment:
-                    equipment.available = 1
+                    equipment.available += 1  # increment available count by one to return it
                 db.session.delete(rented)
                 db.session.commit()
                 return redirect(url_for('login_bp.dashboard'))
-
+            
             elif prev_status == 'approved' and new_status == 'ended':
                 rented.status = 'Ended'
                 rented.end_date = datetime.utcnow()
                 if equipment:
-                    equipment.available = 1
+                    equipment.available += 1  # increment available count by one to return it
+
 
             db.session.commit()
             return redirect(url_for('rented_bp.req_browse'))
