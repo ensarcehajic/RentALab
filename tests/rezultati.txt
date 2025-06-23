@@ -1,0 +1,14 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.4.1, pluggy-1.6.0 -- /home/habve/RentALab/venv/bin/python3
+cachedir: .pytest_cache
+rootdir: /home/habve/RentALab
+plugins: mock-3.14.1, flask-1.3.0
+collecting ... collected 5 items
+
+tests/test_admin.py::test_add_staff_form_validation PASSED               [ 20%]
+tests/test_admin.py::test_add_staff_route_access PASSED                  [ 40%]
+tests/test_admin.py::test_add_staff_success PASSED                       [ 60%]
+tests/test_admin.py::test_add_staff_duplicate_email PASSED               [ 80%]
+tests/test_admin.py::test_add_staff_invalid_form_data PASSED             [100%]
+
+============================== 5 passed in 1.42s ===============================
