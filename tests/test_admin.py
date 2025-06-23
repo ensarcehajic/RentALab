@@ -8,10 +8,6 @@ from flask import url_for
 from werkzeug.security import generate_password_hash, check_password_hash
 from App.models.database import db, User
 
-# --------------------------
-# Fixtures
-# --------------------------
-
 @pytest.fixture(scope='module')
 def app():
     """Application fixture with test configuration"""
@@ -43,9 +39,6 @@ def admin_client(client):
         sess['user'] = 'admin@fet.ba'
     return client
 
-# --------------------------
-# Tests
-# --------------------------
 
 def test_add_staff_form_validation(app):
     """Test form validation rules"""
@@ -100,7 +93,7 @@ def test_add_staff_success(mock_token, mock_mail, admin_client, app):
         assert b'User successfully added' in response.data
         user = User.query.filter_by(email='newstaff@fet.ba').first()
         assert user is not None
-        assert user.name == 'None'  # Default values from admin.py
+        assert user.name == 'None'  
         assert user.surname == 'None'
 
 def test_add_staff_duplicate_email(admin_client, app):
