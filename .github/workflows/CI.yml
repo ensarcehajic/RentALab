@@ -1,0 +1,71 @@
+name: Flask CI kod
+
+on:
+  push:
+    branches: [ main, testovi, feature/* ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: 1234
+          POSTGRES_DB: postgres
+          POSTGRES_HOST_AUTH_METHOD: trust
+        options: >-
+          --health-cmd "pg_isready -U admin"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install -r requirements.txt
+          pip install pytest pytest-mock pytest-flask
+
+      - name: Wait for PostgreSQL
+        run: |
+          until PGPASSWORD=1234 pg_isready -h localhost -p 5432 -U admin; do
+            echo "Waiting for PostgreSQL..."
+            sleep 2
+          done
+
+      - name: Setup test database
+        run: |
+          PGPASSWORD=1234 psql -U admin -h localhost -d postgres -c "DROP DATABASE IF EXISTS rentalab_test;"
+          PGPASSWORD=1234 psql -U admin -h localhost -d postgres -c "CREATE DATABASE rentalab_test;"
+          PGPASSWORD=1234 psql -U admin -h localhost -d postgres -c "DROP DATABASE IF EXISTS rentalab;"
+          PGPASSWORD=1234 psql -U admin -h localhost -d postgres -c "CREATE DATABASE rentalab;"
+
+      - name: Run tests
+        run: |
+          source venv/bin/activate
+          pytest tests/ -v -s
+        env:
+          PGPASSWORD: 1234
+          DATABASE_URL: postgresql://admin:1234@localhost:5432/rentalab
+          SQLALCHEMY_DATABASE_URI: postgresql://admin:1234@localhost:5432/rentalab
+          DB_HOST: localhost
+          DB_USER: admin
+          DB_PASSWORD: 1234
+          DB_NAME: rentalab
+          DB_PORT: 5432
