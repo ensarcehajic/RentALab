@@ -40,7 +40,7 @@ class RentedForm(FlaskForm):
     purchase_value = DecimalField("Purchase Value (BAM)", places=2, validators=[DataRequired()])
     service_period = StringField("Service Period", validators=[DataRequired()])
     next_service = DateTimeField("Next Service Date", format="%Y-%m-%d", validators=[DataRequired()])
-    available = IntegerField("Available", validators=[DataRequired()])
+    available = IntegerField("Available", validators=[Optional()])
     note = TextAreaField("Note Equipment", validators=[Optional()])
 
     # --- Other rental-related fields ---
