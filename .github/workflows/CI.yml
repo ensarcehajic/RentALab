@@ -1,6 +1,10 @@
 name: Flask CI kod
 
-on: [push]
+on:
+  push:
+    branches: [ main, testovi, develop, feature/* ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   test:
@@ -11,10 +15,11 @@ jobs:
         image: postgres:13
         env:
           POSTGRES_USER: admin
-          POSTGRES_PASSWORD: password
+          POSTGRES_PASSWORD: 1234
           POSTGRES_DB: postgres
+          POSTGRES_HOST_AUTH_METHOD: trust
         options: >-
-          --health-cmd pg_isready
+          --health-cmd "pg_isready -U admin"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -39,19 +44,20 @@ jobs:
 
       - name: Wait for PostgreSQL
         run: |
-          until pg_isready -h localhost -p 5432 -U admin; do
+          until PGPASSWORD=1234 pg_isready -h localhost -p 5432 -U admin; do
             echo "Waiting for PostgreSQL..."
             sleep 2
           done
 
       - name: Setup test database
         run: |
-          PGPASSWORD=password psql -U admin -h localhost -d postgres -c "DROP DATABASE IF EXISTS rentalab_test;"
-          PGPASSWORD=password psql -U admin -h localhost -d postgres -c "CREATE DATABASE rentalab_test;"
+          PGPASSWORD=1234 psql -U admin -h localhost -d postgres -c "DROP DATABASE IF EXISTS rentalab_test;"
+          PGPASSWORD=1234 psql -U admin -h localhost -d postgres -c "CREATE DATABASE rentalab_test;"
 
       - name: Run tests
         run: |
           source venv/bin/activate
           pytest tests/ -v -s
         env:
-          PGPASSWORD: password
+          PGPASSWORD: 1234
+          DATABASE_URL: postgresql://admin:1234@localhost:5432/rentalab_test
