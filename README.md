@@ -14,6 +14,14 @@ Projekat za iznajmljivanje laboratorijske opreme na Fakultetu elektrotehnike u T
 - **Google Meet**
 
 
+## Korištene tehnologije
+
+- **Backend**  : Python, Flask, SQLAlchemy
+- **Frontend** : HTML, CSS, Jinja2
+- **Database** : PostgreSQL
+- **Alatt**    : VS Code, GitHub, Jira
+
+
 ## Set-up
 
 1. Kloniraj repozitorij:
@@ -61,28 +69,23 @@ python run.py
 
 ## Funkcionalnosti
 
+-  **Register sistem** za studente
 -  **Login sistem** s ulogama:
   - **Student**: može pregledati i zatražiti opremu  
-  - **Laborant**: vidjeti zahtjeve, odobriti iste i detalje o korisnicima (u planu)
-- **Baza podataka** (PostgreSQL) sa tabelom `users` i `oprema`
-- **Zahtjevi za iznajmljivanje** sa vremenskim ograničenjem (u planu)
-- **Admin dashboard** 
+  - **Laborant**: upravlja opremom,prati zahtjeve, izdaje opremu
+  - **Profesor**: upravlja zahtjevima za iznajmljivanje
+-  **Verifikacija email adrese**
+-  **Obnova zaboravljene lozinke**
+-  **Pregled opreme**
+-  **Dodavanje opreme ručno ili uz pomoć CVS dokumenta**
+-  **Izmjena podataka opreme**
+-  **Admin panel za dodavanje nastavnog osoblja**
+-  **Pregled i uređivanje profila korisnika**
+-  **Podnošenje zahtjeva za iznajmljivanje opreme**
+-  **Automatsko slanje maila zaduženom profesoru**
+-  **Pregled zahtjeva i upravljanje istima**
 
 
-## Status implementacije
-
-| Funkcionalnost               | Status      |
-|-----------------------------|-------------|
-| Login sistem                | ✅ Završeno |
-| Register sistem             | ✅ Završeno |
-| Frontend dizajn             | ✅ Završeno |
-| Razvoj baze za login        | ✅ Završeno |
-| Autentifikacija iz baze     | ✅ Završeno |
-| Prikaz dostupne opreme      | ✅ Završeno |
-| Filtriranje dostupne opreme | ✅ Završeno |
-| Preuzimanje .csv opreme     | ✅ Završeno |
-| Rezervacija opreme          | 🔜 Planirano |
-| Admin panel za laboranta    | 🔜 Planirano |
 
 
 
