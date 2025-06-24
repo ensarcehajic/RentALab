@@ -2,7 +2,7 @@ name: Flask CI kod
 
 on:
   push:
-    branches: [ main, testovi, develop, feature/* ]
+    branches: [ main, testovi, feature/* ]
   pull_request:
     branches: [ main ]
 
@@ -53,6 +53,8 @@ jobs:
         run: |
           PGPASSWORD=1234 psql -U admin -h localhost -d postgres -c "DROP DATABASE IF EXISTS rentalab_test;"
           PGPASSWORD=1234 psql -U admin -h localhost -d postgres -c "CREATE DATABASE rentalab_test;"
+          PGPASSWORD=1234 psql -U admin -h localhost -d postgres -c "DROP DATABASE IF EXISTS rentalab;"
+          PGPASSWORD=1234 psql -U admin -h localhost -d postgres -c "CREATE DATABASE rentalab;"
 
       - name: Run tests
         run: |
@@ -60,4 +62,10 @@ jobs:
           pytest tests/ -v -s
         env:
           PGPASSWORD: 1234
-          DATABASE_URL: postgresql://admin:1234@localhost:5432/rentalab_test
+          DATABASE_URL: postgresql://admin:1234@localhost:5432/rentalab
+          SQLALCHEMY_DATABASE_URI: postgresql://admin:1234@localhost:5432/rentalab
+          DB_HOST: localhost
+          DB_USER: admin
+          DB_PASSWORD: 1234
+          DB_NAME: rentalab
+          DB_PORT: 5432
