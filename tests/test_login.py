@@ -272,7 +272,8 @@ def test_registration_existing_email(client, init_db):
         'city': 'Testville',
         'phone_number': '555-5555',
         'password': 'mypassword',
-        'confirm_password': 'mypassword'
+        'confirm_password': 'mypassword',
+        'agree': 'on'
     }, follow_redirects=True)
 
     assert response.status_code == 200
