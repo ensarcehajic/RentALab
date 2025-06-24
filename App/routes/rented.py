@@ -202,11 +202,40 @@ def rent(inv_num):
 
 
 #shows all "requests" aka rents in the browser
-@rented_bp.route('/request_browse', methods=['GET', 'POST'])
+@rented_bp.route('/request_browse', methods=['GET'])
 def req_browse():
-    rented_raw = Rented.query.all()
+    if 'user' not in session:
+        return redirect(url_for('login_bp.login'))
 
-    #creating the fileds for renting
+    current_user = User.query.filter_by(email=session['user']).first()
+
+    # Dohvati filter iz URL-a (npr. ?status=pending) ili podesi na 'pending' ako nema
+    status_filter = request.args.get('status', 'pending').lower()
+
+    # Bazni query – svi zahtjevi u kojima učestvuje trenutni korisnik
+    base_query = Rented.query.filter(
+        (Rented.renter_id == current_user.id) |
+        (Rented.approver_id == current_user.id) |
+        (Rented.issued_by_id == current_user.id)
+    )
+
+    # Broj zahtjeva po statusima
+    count_all = base_query.count()
+    count_pending = base_query.filter(Rented.status.ilike('pending')).count()
+    count_approved = base_query.filter(Rented.status.ilike('approved')).count()
+    count_ended = base_query.filter(Rented.status.ilike('ended')).count()
+
+    # Primijeni filtriranje po statusu ako je odabrano
+    if status_filter in ['pending', 'approved', 'ended']:
+        query = base_query.filter(Rented.status.ilike(status_filter))
+    elif status_filter == 'all':
+        query = base_query
+    else:
+        query = base_query.filter(Rented.status.ilike('pending'))  # fallback ako neko ručno upiše nepostojeći status
+
+    rented_raw = query.all()
+
+    # Priprema liste za prikaz u šablonu
     rented_list = []
     for rent in rented_raw:
         renter = User.query.get(rent.renter_id)
@@ -222,7 +251,15 @@ def req_browse():
             'status': rent.status
         })
 
-    return render_template('request_browse.html', rented_list=rented_list)
+    return render_template(
+        'request_browse.html',
+        rented_list=rented_list,
+        current_filter=status_filter,
+        count_all=count_all,
+        count_pending=count_pending,
+        count_approved=count_approved,
+        count_ended=count_ended
+    )
 
 
 #and finaly it takes the rent_id (primary key) after you selected a "request" in the above section and shows it in detail

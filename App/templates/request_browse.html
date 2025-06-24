@@ -10,6 +10,21 @@
 <br>
 <h1>Rental Request List</h1>
 
+<div class="status-tabs">
+    <a href="{{ url_for('rented_bp.req_browse', status='all') }}" class="{% if current_filter == 'all' %}active-tab{% endif %}">
+        All ({{ count_all }})
+    </a>
+    <a href="{{ url_for('rented_bp.req_browse', status='pending') }}" class="{% if current_filter == 'pending' %}active-tab{% endif %}">
+        Pending ({{ count_pending }})
+    </a>
+    <a href="{{ url_for('rented_bp.req_browse', status='approved') }}" class="{% if current_filter == 'approved' %}active-tab{% endif %}">
+        Approved ({{ count_approved }})
+    </a>
+    <a href="{{ url_for('rented_bp.req_browse', status='ended') }}" class="{% if current_filter == 'ended' %}active-tab{% endif %}">
+        Ended ({{ count_ended }})
+    </a>
+</div>
+
 <!--{{ macros.search_bar(url_for('rented_bp.req_browse'), search) }}-->
 
 <table>
