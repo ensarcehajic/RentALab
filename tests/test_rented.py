@@ -93,7 +93,7 @@ def admin_client(client, setup_rent_data):
         sess['user'] = setup_rent_data['admin'].email
     return client
 
-#TESTOVI
+#TESTOVI 
 
 def test_rent_page_access_redirect(client):
     response = client.get("/rent/INV-123", follow_redirects=False)
