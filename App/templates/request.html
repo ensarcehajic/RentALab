@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Equipment Rental{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/Rent.css') }}">
+{% endblock %}
+
+{% block content %}
+<img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="logo">
+<h1>Equipment Rental Request Details</h1>
+
+{% if error_message %}
+  <div style="color: white; background-color: #d9534f; padding: 10px; border-radius: 5px; margin-bottom: 1em; font-weight: bold;">
+    {{ error_message }}
+  </div>
+{% endif %}
+
+<div class="form-wrapper">
+    <form method="POST">
+        {{ form.hidden_tag() }}
+
+        <div class="form-columns" style="display: flex; gap: 0rem;">
+
+            <!-- Personnel Information Column -->
+            <div class="form-column" style="flex: 1;">
+                <h2>Personnel Information</h2>
+                <p>{{ form.issued_by_name.label }}<br>{{ form.issued_by_name(class="input-field") }}</p>
+                <p>{{ form.approver_name.label }}<br>{{ form.approver_name(class="input-field") }}</p>
+                <p>{{ form.renter_name.label }}<br>{{ form.renter_name(class="input-field") }}</p>
+                <p>{{ form.renter_telephone.label }}<br>{{ form.renter_telephone(class="input-field") }}</p>
+                <p>{{ form.renter_address.label }}<br>{{ form.renter_address(class="input-field") }}</p>
+            </div>
+
+            <!-- Equipment Details Column (split vertically) -->
+            <div class="form-column" style="flex: 2; display: flex; gap: 2rem;">                
+                <div style="flex: 1;">
+                    <h2>Equipment Details</h2>
+                    <p>{{ form.inventory_number.label }}<br>{{ form.inventory_number(class="input-field") }}</p>
+                    <p>{{ form.name.label }}<br>{{ form.name(class="input-field") }}</p>
+                    <p>{{ form.description.label }}<br>{{ form.description(rows=3, cols=40, class="input-field") }}</p>
+                    <p>{{ form.serial_number.label }}<br>{{ form.serial_number(class="input-field") }}</p>                    
+                    <p>{{ form.available.label }}<br>{{ form.available(class="input-field") }}</p>
+                    <p>{{ form.note.label }}<br>{{ form.note(rows=3, cols=40, class="input-field") }}</p>                    
+                </div>
+
+                {% if user_role == 'student' %}
+                <div style="position: absolute; left: -9999px; top: -9999px;">
+                {% else %}
+                <div style="flex: 1;">
+                {% endif %}
+                    <h2 style="visibility: hidden; margin: 0; padding: 0;">Placeholder to align inputs</h2>
+                    <p>{{ form.model_number.label }}<br>{{ form.model_number(class="input-field") }}</p>
+                    <p>{{ form.purchase_value.label }}<br>{{ form.purchase_value(class="input-field") }}</p>
+                    <p>{{ form.service_period.label }}<br>{{ form.service_period(class="input-field") }}</p>
+                    <p>{{ form.next_service.label }}<br>{{ form.next_service(class="input-field") }}</p>
+                    <p>{{ form.date_of_acquisition.label }}<br>{{ form.date_of_acquisition(class="input-field") }}</p>
+                    <p>{{ form.warranty_until.label }}<br>{{ form.warranty_until(class="input-field") }}</p>
+                    <p>{{ form.supplier.label }}<br>{{ form.supplier(class="input-field") }}</p>                    
+                </div>
+            </div>
+
+            <!-- Rental Information Column -->
+            <div class="form-column" style="flex: 1;">
+                <h2>Rental Information</h2>
+                <p>{{ form.date_rent_start.label }}<br>{{ form.date_rent_start(class="input-field") }}</p>
+                <p>{{ form.date_rent_end.label }}<br>{{ form.date_rent_end(class="input-field") }}</p>
+                <p>{{ form.status.label }}<br>{{ form.status(class="input-field") }}</p>
+                <p>{{ form.project.label }}<br>{{ form.project(class="input-field") }}</p>
+                <p>{{ form.subject.label }}<br>{{ form.subject(class="input-field") }}</p>
+                <p>{{ form.note_rent.label }}<br>{{ form.note_rent(rows=3, cols=40, class="input-field") }}</p>
+            </div>
+
+        </div>
+
+        <div class="form-submit-wrapper" style="margin-top: 0rem;">
+            {{ form.submit(class="btn btn-primary") }}
+        </div>
+
+    </form>
+</div>
+{% endblock %}

@@ -89,3 +89,32 @@ tr:hover {
     border-radius: 5px;
     cursor: not-allowed;
 }
+table tr:hover {
+    background-color: #f0f0f0;
+}
+.status-tabs {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.status-tabs a {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 0 8px;
+    text-decoration: none;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: #f0f0f0;
+    color: #333;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.status-tabs a:hover {
+    background-color: #e0e0e0;
+}
+
+.status-tabs a.active-tab {
+    background-color: black;
+    color: white;
+    border-color: black;
+}

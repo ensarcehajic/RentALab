@@ -13,32 +13,56 @@
       <h1>Join us!</h1>
       <p>Create your account and start using Rent a Lab</p>
 
+      <!-- FLASH MESSAGES -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <ul class="flash-messages">
+            {% for category, message in messages %}
+              <li class="alert {{ category }}">{{ message }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      {% endwith %}
+
       <form class="login-form" method="POST" action="{{ url_for('login_bp.register') }}">
         {{ form.hidden_tag() }}
 
+        <label for="name">Name</label>
+        {{ form.name(id='name', class_='input-field', placeholder='Enter your name') }}
+      
+        <label for="surname">Surname</label>
+        {{ form.surname(id='surname', class_='input-field', placeholder='Enter your surname') }}
+        
         <label for="email">Email</label>
-        {{ form.email(id='email', class_='input-field', placeholder='Enter your email') }}
-
-        <label for="username">Username</label>
-        {{ form.username(id='username', class_='input-field', placeholder='Choose a username') }}
-
+        {{ form.email(id='email', class_='input-field', placeholder='Enter your @fet.ba email') }}
+      
+        <label for="address">Address</label>
+        {{ form.address(id='address', class_='input-field', placeholder='Enter your address') }}
+     
+        <label for="city">City</label>
+        {{ form.city(id='city', class_='input-field', placeholder='Enter your city') }}
+     
+        <label for="phone_number">Phone Number</label>
+        {{ form.phone_number(id='phone_number', class_='input-field', placeholder='Enter your phone number') }}
+      
         <label for="password">Password</label>
         {{ form.password(id='password', class_='input-field', placeholder='Create a password') }}
+     
+        <label for="confirm_password">Confirm Password</label>
+        {{ form.confirm_password(id='confirm_password', class_='input-field', placeholder='Repeat your password') }}
+     
+        <!-- ADDED CHECKBOX FOR AGREEMENT -->
+        <p style="margin-top: 1rem;">
+          <input type="checkbox" id="agree" name="agree" required>
+          <label for="agree">
+            I agree to the <a href="{{ url_for('login_bp.tos') }}" target="_blank">Terms of Service</a> and <a href="{{ url_for('login_bp.eula') }}" target="_blank">End User License Agreement</a>.
+          </label>
+        </p>
 
         <button type="submit">Register</button>
 
         <p class="register-text">Already have an account? <a href="{{ url_for('login_bp.login') }}">Login here</a></p>
       </form>
-
-      {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-          <ul class="flash-messages">
-            {% for category, message in messages %}
-              <li class="{{ category }}">{{ message }}</li>
-            {% endfor %}
-          </ul>
-        {% endif %}
-      {% endwith %}
     </div>
 
     <div class="right-side">

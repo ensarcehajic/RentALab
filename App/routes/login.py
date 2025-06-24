@@ -1,83 +1,172 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, session
+from flask import Blueprint, render_template, redirect, url_for, flash, session, request, current_app,get_flashed_messages
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import DataRequired, Length, Email,Regexp
+from wtforms import StringField, PasswordField, SubmitField, BooleanField  
+from wtforms.validators import DataRequired, Length, Email, Regexp, EqualTo
 from App.models.database import db, User
 from werkzeug.security import check_password_hash, generate_password_hash
-import os
+from flask_mail import Message
+from App.token_utils import generate_confirmation_token, confirm_token
+from App import mail
 
-template_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'templates'))
-static_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'static'))
-
-login_bp = Blueprint('login_bp', __name__, template_folder=template_dir, static_folder=static_dir)
+login_bp = Blueprint('login_bp', __name__, template_folder='../templates', static_folder='../static')
 
 class LoginForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired(), Length(min=4, max=20)])
-    password = PasswordField('Password', validators=[DataRequired(), Length(min=5, max=50)])
-
-class RegisterForm(FlaskForm):
     email = StringField('Email', validators=[
         DataRequired(),
         Email(),
         Regexp(r'^[\w\.-]+@fet\.ba$', message="Email must be in @fet.ba domain.")
     ])
-    username = StringField('Username', validators=[DataRequired(), Length(min=3, max=20)])
-    password = PasswordField('Password', validators=[DataRequired(), Length(min=6)])
+    password = PasswordField('Password', validators=[DataRequired(), Length(min=5, max=50)])
+    submit = SubmitField('Login')
+
+class RegisterForm(FlaskForm):
+    name = StringField('Name', validators=[DataRequired()])
+    surname = StringField('Surname', validators=[DataRequired()])
+    email = StringField('Email', validators=[
+        DataRequired(),
+        Email(),
+        Regexp(r'^[\w\.-]+@fet\.ba$', message="Email must be in @fet.ba domain.")
+    ])
+    address = StringField('Address', validators=[DataRequired()])
+    city = StringField('City', validators=[DataRequired()])
+    phone_number = StringField('Phone Number', validators=[
+    DataRequired(),
+    Regexp(r'^\+?[0-9\s\-]{6,15}$', message="Phone number must contain only digits and may include +, spaces or dashes.")
+    ])
+    password = PasswordField('Password', validators=[
+        DataRequired(),
+        Length(min=6)
+    ])
+    confirm_password = PasswordField('Confirm Password', validators=[
+        DataRequired(),
+        EqualTo('password', message='Passwords must match')
+    ])
     submit = SubmitField('Register')
+
+# --- Routes ---
 
 @login_bp.route('/login', methods=['GET', 'POST'])
 def login():
-    if (session.get('user')):
-        return redirect(url_for('login_bp.logout'))
+    if session.get('user'):
+        flash('You are already logged in.', 'info')
+        get_flashed_messages()
+        return redirect(url_for('login_bp.dashboard'))
+
     form = LoginForm()
+
     if form.validate_on_submit():
-        username = form.username.data
+        email = form.email.data
         password = form.password.data
-        
-        user = User.query.filter_by(username=username).first()
-        
+
+        user = User.query.filter_by(email=email).first()
+
         if user and check_password_hash(user.password, password):
-            session['user'] = user.username
+            if not user.verified:
+                flash('Please verify your email before logging in.', 'warning')
+                return redirect(url_for('login_bp.login'))
+            session['user'] = user.email
             session['role'] = user.role
             flash('Login successful!', 'success')
+            get_flashed_messages()
             return redirect(url_for('login_bp.dashboard'))
         else:
-            flash('Invalid username or password', 'danger')
-    
+            flash('Invalid email or password', 'danger')
+            return render_template('login.html', form=form)
+
+
+    elif request.method == 'POST':
+        for field, errors in form.errors.items():
+            for error in errors:
+                flash(error, 'danger')
+
     return render_template('login.html', form=form)
 
 @login_bp.route('/register', methods=['GET', 'POST'])
 def register():
+    if session.get('user'):
+        flash('You are already logged in.', 'info')
+        return redirect(url_for('login_bp.dashboard'))
     form = RegisterForm()
     if form.validate_on_submit():
-        email = form.email.data
-        username = form.username.data
-        password = form.password.data
 
-        existing_user = User.query.filter_by(username=username).first()
-        if existing_user:
-            flash('Username already exists.', 'danger')
+        # Check if checkbox is ticked
+        if 'agree' not in request.form:
+            flash('You must agree to the Terms of Service and EULA to register.', 'danger')
             return redirect(url_for('login_bp.register'))
 
-        existing_email = User.query.filter_by(email=email).first()
-        if existing_email:
+        email = form.email.data
+        phone_number = form.phone_number.data
+        password = form.password.data
+        confirm_password = form.confirm_password.data
+
+        if User.query.filter_by(email=email).first():
             flash('Email already exists.', 'danger')
             return redirect(url_for('login_bp.register'))
 
+        if User.query.filter_by(phone_number=phone_number).first():
+            flash('Phone number already exists.', 'danger')
+            return redirect(url_for('login_bp.register'))
+
+        if password != confirm_password:
+            flash('Passwords do not match.', 'danger')
+            return redirect(url_for('login_bp.register'))
+
         new_user = User(
+            name=form.name.data,
+            surname=form.surname.data,
             email=email,
-            username=username,
+            address=form.address.data,
+            city=form.city.data,
+            phone_number=phone_number,
             password=generate_password_hash(password),
-            role="student"
+            role="student",
+            verified=False
         )
         db.session.add(new_user)
         db.session.commit()
-        flash('Registration successful. Please login.', 'success')
+
+        # Send verification email
+        token = generate_confirmation_token(email)
+        verify_link = url_for('login_bp.verify_email', token=token, _external=True)
+        msg = Message("Confirm your email", recipients=[email])
+        msg.html = render_template("verification.html", verify_link=verify_link)
+        mail.send(msg)
+
+        flash('Registration successful. Please check your email to verify your account.', 'info')
         return redirect(url_for('login_bp.login'))
+
+    elif request.method == 'POST':
+        for field, errors in form.errors.items():
+            for error in errors:
+                flash(error, 'danger')
 
     return render_template('register.html', form=form)
 
 
+@login_bp.route('/tos')
+def tos():
+    return render_template('tos.html')
+
+@login_bp.route('/eula')
+def eula():
+    return render_template('eula.html')
+
+@login_bp.route('/verify/<token>')
+def verify_email(token):
+    email = confirm_token(token)
+    if not email:
+        flash("Invalid or expired verification link.", 'danger')
+        return redirect(url_for('login_bp.login'))
+
+    user = User.query.filter_by(email=email).first()
+    if user:
+        user.verified = True
+        db.session.commit()
+        flash("Your email has been verified. You can now log in.", "success")
+    else:
+        flash("User not found.", "danger")
+
+    return redirect(url_for('login_bp.login'))
 
 @login_bp.route('/dashboard')
 def dashboard():
@@ -86,14 +175,66 @@ def dashboard():
         return redirect(url_for('login_bp.login'))
     username = session['user']
     role = session.get('role')
-    return render_template('dashboard.html',username=username, role=role)
+    return render_template('dashboard.html', username=username, role=role)
 
 @login_bp.route('/logout')
 def logout():
+    # Explicitly remove all authentication-related session variables
     session.pop('user', None)
+    session.pop('role', None)
+    session.pop('_fresh', None)  
+    session.pop('_id', None)     
+    session.clear()               
     flash("You have been logged out.", 'info')
     return redirect(url_for('login_bp.login'))
 
 @login_bp.route('/')
 def home():
     return redirect(url_for('login_bp.login'))
+
+@login_bp.route('/forgot-password', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'POST':
+        email = request.form['email']
+        user = User.query.filter_by(email=email).first()
+
+        if user:
+            token = generate_confirmation_token(email)
+            reset_link = url_for('login_bp.reset_password', token=token, _external=True)
+            msg = Message("Reset your password", recipients=[email])
+            msg.html = render_template("reset_email.html", reset_link=reset_link)
+            mail.send(msg)
+            flash("Password reset instructions sent to your email.", "info")
+        else:
+            flash("Email not found.", "danger")
+        return redirect(url_for('login_bp.login'))
+
+    return render_template('forgot_password.html')
+
+@login_bp.route('/reset-password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    email = confirm_token(token, expiration=120)
+    if not email:
+        flash("Invalid or expired password reset link.", 'danger')
+        return redirect(url_for('login_bp.login'))
+
+    if request.method == 'POST':
+        password = request.form['password']
+        confirm = request.form['confirm_password']
+        if password != confirm:
+            flash("Passwords do not match.", 'danger')
+            return render_template('reset_password.html', token=token)
+
+        user = User.query.filter_by(email=email).first()
+        if user:
+            user.password = generate_password_hash(password)
+            db.session.commit()
+            flash("Your password has been updated. Please log in.", 'success')
+            return redirect(url_for('login_bp.login'))
+        else:
+            flash("User not found.", 'danger')
+            return redirect(url_for('login_bp.login'))
+
+    return render_template('reset_password.html', token=token)
+
+

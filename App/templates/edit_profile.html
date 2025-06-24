@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profiles.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="center-container">
+  <div class="form-box">
+    <h2>Edit Profile</h2>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash-message {{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" novalidate>
+      {{ form.hidden_tag() }}
+
+      <div class="form-group">
+        <label>Email (unchangeable)</label>
+        <input type="text" class="form-control" value="{{ email }}" readonly>
+      </div>
+
+      <div class="form-group">
+        {{ form.name.label }}
+        {{ form.name(class="form-control", readonly=not can_edit_name) }}
+      </div>
+
+      <div class="form-group">
+        {{ form.surname.label }}
+        {{ form.surname(class="form-control", readonly=not can_edit_surname) }}
+      </div>
+
+      <div class="form-group">
+        {{ form.address.label }}
+        {{ form.address(class="form-control") }}
+      </div>
+
+      <div class="form-group">
+        {{ form.city.label }}
+        {{ form.city(class="form-control") }}
+      </div>
+
+      <div class="form-group">
+        {{ form.phone_number.label }}
+        {{ form.phone_number(class="form-control") }}
+      </div>
+
+      <button type="submit" class="btn-submit">{{ form.submit.label.text }}</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

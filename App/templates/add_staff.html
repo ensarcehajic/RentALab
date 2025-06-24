@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profiles.css') }}">
+{% endblock %}
+{% block content %}
+
+  <div class="center-container">
+    <div class="form-box">
+      <h2>Add Teaching Staff</h2>
+
+              {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="flash-message {{ category }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+      <form method="POST" novalidate>
+        {{ form.hidden_tag() }}
+
+        <div class="form-group">
+          {{ form.email.label }} 
+          {{ form.email(class="form-control") }}
+        </div>
+
+        <div class="form-group">
+          {{ form.password.label }} 
+          {{ form.password(class="form-control") }}
+        </div>
+
+        <div class="form-group">
+          {{ form.role.label }} 
+          {{ form.role(class="form-control") }}
+        </div>
+
+        <button type="submit" class="btn-submit">{{ form.submit.label.text }}</button>
+      </form>
+    </div>
+  </div>
+{% endblock %}

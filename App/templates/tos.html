@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Terms of Service{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/legal.css') }}">
+{% endblock %}
+
+{% block content %}
+<img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="logo">
+<h1 style="text-align: center;">Terms of Service</h1>
+
+<div class="legal-wrapper legal-tos">
+    <p><strong>Effective Date:</strong> The moment you stopped reading and clicked "Accept".</p>
+    <p>Welcome to RentALab™. By using our platform, products, or services, you acknowledge and agree to these terms — whether you read them or not. Spoiler: you don’t have a choice.</p>
+
+    <h2>1. Data Collection & Privacy</h2>
+    <p>
+        We collect, analyze, store, share, sell, trade, auction, and occasionally leak all data you generate on, through, or around our platform. This includes, but is not limited to: your location (down to the nearest centimeter), device information, browsing history, click patterns, facial expressions, whispered secrets, dreams, and suspiciously high blood pressure readings.
+    </p>
+    <p>
+        We promise to protect this data with state-of-the-art encryption algorithms that are mostly effective, except when they aren’t.
+    </p>
+
+    <h2>2. Modification of Services</h2>
+    <p>
+        RentALab™ reserves the exclusive right to modify, suspend, discontinue, or break any features, services, or content at any time without notice or explanation. This includes removing features you rely on, introducing bugs, changing layouts without warning, or outright deleting things you love.
+    </p>
+    <p>
+        If you don’t like it, feel free to stop using our services — but we’re not holding our breath.
+    </p>
+
+    <h2>3. User Conduct</h2>
+    <p>
+        You agree to behave in a way that doesn’t interfere with our enjoyment of running this platform. This means no hacking, no spamming, no protesting, no sarcastic tweets, and definitely no attempts at humor that might offend our delicate sensibilities.
+    </p>
+    <p>
+        Violation of this may result in suspension, banning, deletion of your content, and public shaming on our social channels.
+    </p>
+
+    <h2>4. Liability</h2>
+    <p>
+        RentALab™ is not liable for any damages arising from your use or inability to use the services, including but not limited to: loss of data, loss of income, physical harm caused by excessive screen time, broken relationships, or existential dread.
+    </p>
+    <p>
+        Our maximum liability is limited to a single cup of coffee or equivalent, whichever is less.
+    </p>
+
+    <h2>5. Dispute Resolution</h2>
+    <p>
+        Any disputes arising out of or related to these Terms will be resolved by a game of rock-paper-scissors, best two out of three. If a tie persists, disputes will be settled at the RentALab™ corporate headquarters or a location of our choosing — your transportation and accommodation not included.
+    </p>
+
+    <h2>6. Consent</h2>
+    <p>
+        By continuing to use our services, you consent to all terms and conditions stated herein — as well as those unwritten, undisclosed, and yet-to-be-invented. Resistance is futile.
+    </p>
+
+    <p class="closing">Thank you for your blind trust.<br><em>— The RentALab™ Legal Overlords</em></p>
+</div>
+{% endblock %}

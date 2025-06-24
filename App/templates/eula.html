@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}End User License Agreement{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/legal.css') }}">
+{% endblock %}
+
+{% block content %}
+<img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="logo">
+<h1 style="text-align: center;">End User License Agreement (EULA)</h1>
+
+<div class="legal-wrapper legal-eula">
+    <p><strong>Read Carefully. Or don’t. We already own you.</strong></p>
+
+    <h2>1. License Grant</h2>
+    <p>
+        Upon acceptance of this End User License Agreement (hereinafter referred to as the “Agreement”), you are hereby granted a non-exclusive, non-transferable, royalty-free, revocable license to install and utilize the Software solely for personal, non-commercial purposes, subject to full compliance with all terms and conditions outlined herein.
+    </p>
+    <p>
+        RentALab™ reserves the unconditional and unilateral right to revoke, suspend, terminate, limit, or otherwise modify this license at any time, with or without prior notice, for any reason deemed sufficient — including, but not limited to, actual violations, perceived violations, suspected violations, or simply at our discretion, because we felt like it.
+    </p>
+    <p>
+        This license does not constitute a sale of the Software or any associated intellectual property. All rights not expressly granted to you remain firmly and eternally with RentALab™, including rights we haven’t invented yet.
+    </p>
+
+    <h2>2. Restrictions</h2>
+    <p>By accepting this Agreement, you explicitly agree to the following restrictions, limitations, prohibitions, and other joyless constraints on your use of the Software:</p>
+    <ul>
+        <li><strong>No Reverse Engineering:</strong> You shall not, under any circumstance (including but not limited to curiosity, boredom, or rebellion), attempt to decompile, disassemble, reverse engineer, or otherwise derive the source code, algorithms, or dark secrets of the Software.</li>
+        
+        <li><strong>No Modification:</strong> You are strictly forbidden from modifying, patching, altering, enhancing, or otherwise tampering with any part of the Software, even if it would make it better. Especially if it would make it better.</li>
+        
+        <li><strong>No Redistribution:</strong> You may not rent, lease, sublicense, publish, distribute, upload, or broadcast the Software, unless it's to your cat, and even then, licensing fees may apply.</li>
+        
+        <li><strong>No Sharing:</strong> This license is tied solely to you. Sharing your account, access credentials, or even vaguely describing the Software to a friend is grounds for immediate, merciless revocation.</li>
+        
+        <li><strong>No Competition:</strong> You agree not to use the Software to develop or contribute to any product or service that could, even hypothetically, be considered "competition" to RentALab™.</li>
+        
+        <li><strong>No Unauthorized Access:</strong> You may not use any automation, script, bot, black magic, or unauthorized third-party software to access, scrape, interact with, or manipulate the Software.</li>
+        
+        <li><strong>No Joy:</strong> The use of the Software for purposes of fun, personal fulfillment, creative freedom, or satisfaction is strictly prohibited unless expressly permitted in writing by RentALab™.</li>
+        
+        <li><strong>No Circumvention:</strong> You may not attempt to bypass any security, license, or usage restrictions, including but not limited to the ones we haven’t invented yet.</li>
+        
+        <li><strong>No Expectations:</strong> You agree not to expect functionality, support, updates, uptime, empathy, or legal fairness from the Software or its developers.</li>
+    </ul>
+
+    <h2>3. Data Collection & Usage</h2>
+    <p>
+        By installing, accessing, or merely glancing at the Software, you hereby grant RentALab™ the irrevocable right to collect, store, analyze, monetize, leak, laugh at, and share all data you generate, interact with, or even think about while using our product.
+    </p>
+    <p>
+        This includes, but is by no means limited to: device identifiers, IP address, location data accurate to within six inches, biometric patterns (including suspicious eyebrow movements), search history (even the embarrassing stuff), keystrokes, microphone input (even when you’re not using the app), and vague emotional states inferred via unexplained algorithms.
+    </p>
+    <p>
+        All collected data may be used for “enhancing the user experience,” which is legally vague enough to include selling it to third parties, training AI to replace your job, or just printing it out and wallpapering our CEO’s yacht.
+    </p>
+    <p>
+        By proceeding, you acknowledge that you have no expectation of privacy, decency, dignity, or plausible deniability. RentALab™ thanks you for your cooperation and promises to make only moderate efforts to avoid causing a global scandal.
+    </p>
+
+    <h2>4. Software Updates</h2>
+    <p>
+        The Software may, at irregular and unpredictable intervals, automatically download and install updates, patches, hotfixes, regressions, or complete user interface redesigns designed to confuse and disorient you.
+    </p>
+    <p>
+        These updates may:
+        <ul>
+            <li>Break features you rely on</li>
+            <li>Add features no one asked for</li>
+            <li>Change the location of buttons moments before a deadline</li>
+            <li>Drain your battery twice as fast</li>
+            <li>Include “performance enhancements” that statistically do the opposite</li>
+        </ul>
+    </p>
+    <p>
+        You agree in advance to accept all updates without review, consent, or knowledge. Declining updates may result in reduced functionality, spontaneous errors, or the Software sulking silently in the background until you comply.
+    </p>
+
+    <h2>5. Termination</h2>
+    <p>
+        This Agreement is effective until terminated. That termination may be triggered by, but is not limited to, any of the following:
+    </p>
+    <ul>
+        <li>You violated a rule, intentionally or otherwise</li>
+        <li>You didn’t violate a rule, but we thought you might</li>
+        <li>You looked at us funny</li>
+        <li>We were bored</li>
+        <li>The algorithm said so</li>
+        <li>A coin flip went poorly for you</li>
+    </ul>
+    <p>
+        RentALab™ reserves the right to revoke your access, delete your data, and erase all memory of your existence from our servers without warning, justification, or even a farewell emoji. Appeals will be reviewed by an automated system trained exclusively on revenge films.
+    </p>
+
+    <p class="closing">Thanks for using our app. You’re now part of the system.<br><em>— RentALab™ Software Division</em></p>
+</div>
+{% endblock %}

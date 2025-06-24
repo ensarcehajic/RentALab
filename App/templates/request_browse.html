@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Browse Rental Requests{% endblock %}
+<!--{% import "browse/browse_macro.html" as macros %}-->
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/browse.css') }}">
+{% endblock %}
+
+{% block content %}
+<br>
+<h1>Rental Request List</h1>
+
+<div class="status-tabs">
+    <a href="{{ url_for('rented_bp.req_browse', status='all') }}" class="{% if current_filter == 'all' %}active-tab{% endif %}">
+        All ({{ count_all }})
+    </a>
+    <a href="{{ url_for('rented_bp.req_browse', status='pending') }}" class="{% if current_filter == 'pending' %}active-tab{% endif %}">
+        Pending ({{ count_pending }})
+    </a>
+    <a href="{{ url_for('rented_bp.req_browse', status='approved') }}" class="{% if current_filter == 'approved' %}active-tab{% endif %}">
+        Approved ({{ count_approved }})
+    </a>
+    <a href="{{ url_for('rented_bp.req_browse', status='ended') }}" class="{% if current_filter == 'ended' %}active-tab{% endif %}">
+        Ended ({{ count_ended }})
+    </a>
+</div>
+
+<!--{{ macros.search_bar(url_for('rented_bp.req_browse'), search) }}-->
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Renter</th>
+            <th>Approver</th>
+            <th>Equipment</th>
+            <th>Inventory Number</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for rented in rented_list %}
+        <tr style="cursor: pointer;" onclick="window.location='{{ url_for('rented_bp.request_view', rented_id=rented.id) }}'">
+            <td>{{ rented.id }}</td>
+            <td>{{ rented.renter_name }}</td>
+            <td>{{ rented.approver_name }}</td>
+            <td>{{ rented.equipment_name }}</td>
+            <td>{{ rented.inventory_number }}</td>
+            <td>
+				{% if rented.status|lower == 'approved' %}
+					<span class="badge bg-success">Approved</span>
+				{% elif rented.status|lower == 'rejected' %}
+					<span class="badge bg-danger">Rejected</span>
+				{% elif rented.status|lower == 'ended' %}
+					<span class="badge bg-danger">Ended</span>
+				{% else %}
+					<span class="badge bg-secondary">Pending</span>
+				{% endif %}
+			</td>
+
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
