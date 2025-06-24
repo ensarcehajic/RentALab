@@ -15,5 +15,5 @@ moze se dodati:
 -v za detaljniji debugging
 -s da sve pokaze
 
-
 -dodan prazan __init__.py file u ovaj folder, potreban za testiranje profile.py
+-dodajem liniju za potrebe testiranja CI yml fajla (Faris)
