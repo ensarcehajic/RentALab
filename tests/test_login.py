@@ -52,7 +52,8 @@ def init_db(app):
                 'surname': 'User',
                 'address': 'Admin Street 1',
                 'city': 'AdminCity',
-                'phone_number': '111-111'
+                'phone_number': '111-111',
+                'agree': 'on'
             },
             {
                 'email': 'laborant@fet.ba',
@@ -63,7 +64,8 @@ def init_db(app):
                 'surname': 'Tech',
                 'address': 'Lab Street 2',
                 'city': 'LabCity',
-                'phone_number': '222-222'
+                'phone_number': '222-222',
+                'agree': 'on'
             },
             {
                 'email': 'student@fet.ba',
@@ -74,7 +76,8 @@ def init_db(app):
                 'surname': 'One',
                 'address': 'Student Ave 3',
                 'city': 'StudentCity',
-                'phone_number': '333-333'
+                'phone_number': '333-333',
+                'agree': 'on'
             }
         ]
         
