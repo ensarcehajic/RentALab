@@ -52,8 +52,7 @@ def init_db(app):
                 'surname': 'User',
                 'address': 'Admin Street 1',
                 'city': 'AdminCity',
-                'phone_number': '111-111',
-                'agree': 'on'
+                'phone_number': '111-111'
             },
             {
                 'email': 'laborant@fet.ba',
@@ -64,8 +63,7 @@ def init_db(app):
                 'surname': 'Tech',
                 'address': 'Lab Street 2',
                 'city': 'LabCity',
-                'phone_number': '222-222',
-                'agree': 'on'
+                'phone_number': '222-222'
             },
             {
                 'email': 'student@fet.ba',
@@ -76,8 +74,7 @@ def init_db(app):
                 'surname': 'One',
                 'address': 'Student Ave 3',
                 'city': 'StudentCity',
-                'phone_number': '333-333',
-                'agree': 'on'
+                'phone_number': '333-333'
             }
         ]
         
@@ -250,7 +247,9 @@ def test_successful_registration(client, init_db):
         'city': 'Campus City',
         'phone_number': '555-1234',
         'password': 'newpass123',
-        'confirm_password': 'newpass123'
+        'confirm_password': 'newpass123',
+        'agree': 'on'
+
     }, follow_redirects=True)
 
     assert response.status_code == 200
