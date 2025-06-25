@@ -26,15 +26,19 @@
       </div>
 
       <div class="header-right">
-        <a href="{{ url_for('login_bp.logout') }}">
-          <button class="logout-button">Log Out</button>
-        </a>
-
-        <img src="https://i.pravatar.cc/40" alt="User" class="user-avatar" />
-        <!--<img src="{{ gravatar_url }}" alt="User" class="user-avatar" /> --> 
-        <!--Code for user image - from an email, see file login.py-->
-
-        <a href="{{ url_for('profile_bp.edit_profile') }}" class="user-name">{{ session.get('user', 'Gost') }}</a>
+        <div class="dropdown">
+          <div class="dropdown-trigger">
+            <img src="https://i.pravatar.cc/40" alt="User" class="user-avatar" />
+            <span class="user-name">{{ session.get('user', 'Gost') }}</span>
+          </div>
+        
+          <div class="dropdown-content">
+            <a href="{{ url_for('profile_bp.edit_profile') }}">Profile</a>
+            <a href="{{ url_for('login_bp.tos') }}">Terms of Service</a>
+            <a href="{{ url_for('login_bp.eula') }}">EULA</a>
+            <a href="{{ url_for('login_bp.logout') }}" class="logout-link">Log Out</a>
+          </div>
+        </div>
       </div>
     </header>
 
