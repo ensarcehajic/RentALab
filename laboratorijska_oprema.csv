@@ -1,17 +1,71 @@
-naziv,kolicina,kategorija
-Osciloskop,10,Digitalni instrument
-Multimetar,15,Analogni instrument
-Signalni generator,10,Digitalni instrument
-Power Supply,10,Napajanja
-Lemilica,2,Alati
-Matador ploca,15,Pomocna oprema
-Otpornici (razni),100,Komponente
-Kondenzatori (razni),50,Komponente
-Kratkospojnici,100,Pomocna oprema
-Raspberry Pi,4,MCU
-Arduino,5,MCU
-Spectrum Analyzer,6,Digitalni instrument
-Multimetar,20,Digitalni instrument
-Spectrum Analyzer,3,Analogni instrument
-Diode Ispravlja?ke,200,Komponente
-Diode LED,50,Komponente
+inventarski_broj,naziv,opis,serijski_broj,model_broj,dobavljač,datum_nabavke,garancija_do,nabavna_vrijednost,projekat,period_servisiranja,sljedeći_servis,laborant,lokacija,dostupno,bilješka
+TK001,Oskiloskop,Digitalni osciloskop 100 MHz,SN807763,DSO-100,VoltLab,2023-01-25,2026-01-24,1500,TelekomLab2023,12 mjeseci,2024-01-25,Muris,Laboratorija Telekomunikacije,1,Novi uređaj
+TK002,Antenski analizator,Za testiranje antena i kablova,SN522164,AA-100,VectorTech,2022-08-26,2025-08-25,2700,AntenaTest23,12 mjeseci,2023-08-26,Muris,Laboratorija Telekomunikacije,1,Novi uređaj
+TK003,Izvor napona,Stabilizirani izvor napona,SN160820,PS-150,ElektroTech,2020-12-22,2023-12-22,900,Napajanje2022,12 mjeseci,2021-12-22,Muris,Laboratorija Telekomunikacije,1,Novi uređaj
+TK004,RF generator,Izvor radiofrekventnog signala,SN272174,RFG-2000,RF Instruments,2021-03-06,2024-03-05,4300,Projekt RF-20,12 mjeseci,2023-03-06,Muris,Laboratorija Telekomunikacije,1,Novi uređaj
+TK005,Multimetar,Digitalni multimetar,SN753343,DM-500,UNI-T,2023-05-08,2026-05-07,250,Redovna nabavka,12 mjeseci,2026-05-07,Muris,Laboratorija Telekomunikacije,1,Novi uređaj
+TK006,Multimetar,Digitalni multimetar,SN362045,DM-500,UNI-T,2021-11-24,2024-11-23,250,Redovna nabavka,12 mjeseci,2023-11-24,Muris,Laboratorija Telekomunikacije,1,Novi uređaj
+TK007,Oskiloskop,Digitalni osciloskop 100 MHz,SN409163,DSO-100,VoltLab,2021-01-31,2024-01-31,1500,TelekomLab2023,12 mjeseci,2022-01-31,Muris,Laboratorija Telekomunikacije,1,Korišten često
+TK008,Oskiloskop,Digitalni osciloskop 100 MHz,SN981692,DSO-100,VoltLab,2022-11-11,2025-11-10,1500,TelekomLab2023,12 mjeseci,2023-11-11,Muris,Laboratorija Telekomunikacije,1,Novi uređaj
+TK009,Multimetar,Digitalni multimetar,SN368017,DM-500,UNI-T,2022-12-28,2025-12-27,250,Redovna nabavka,12 mjeseci,2023-12-28,Muris,Laboratorija Telekomunikacije,1,U dobrom stanju
+TK010,Spektralni analizator,Analizator frekvencija do 3 GHz,SN706199,SA-3000,ElektroTech,2021-05-19,2024-05-18,3200,RFProjekt22,12 mjeseci,2023-05-19,Muris,Laboratorija Telekomunikacije,1,Korišten često
+TK011,Izvor napona,Stabilizirani izvor napona,SN239284,PS-150,ElektroTech,2023-08-24,2026-08-23,900,Napajanje2022,12 mjeseci,2025-08-23,Muris,Laboratorija Telekomunikacije,1,U dobrom stanju
+TK012,RF generator,Izvor radiofrekventnog signala,SN795756,RFG-2000,RF Instruments,2021-11-15,2024-11-14,4300,Projekt RF-20,12 mjeseci,2022-11-15,Muris,Laboratorija Telekomunikacije,1,U dobrom stanju
+TK013,RF generator,Izvor radiofrekventnog signala,SN561841,RFG-2000,RF Instruments,2021-12-02,2024-12-01,4300,Projekt RF-20,12 mjeseci,2022-12-02,Muris,Laboratorija Telekomunikacije,1,U dobrom stanju
+TK014,RF generator,Izvor radiofrekventnog signala,SN143086,RFG-2000,RF Instruments,2022-03-26,2025-03-25,4300,Projekt RF-20,12 mjeseci,2025-03-25,Muris,Laboratorija Telekomunikacije,1,Novi uređaj
+TK015,Izvor napona,Stabilizirani izvor napona,SN934272,PS-150,ElektroTech,2022-04-24,2025-04-23,900,Napajanje2022,12 mjeseci,2025-04-23,Muris,Laboratorija Telekomunikacije,1,U dobrom stanju
+TK016,Oskiloskop,Digitalni osciloskop 100 MHz,SN467733,DSO-100,VoltLab,2021-09-11,2024-09-10,1500,TelekomLab2023,12 mjeseci,2024-09-10,Muris,Laboratorija Telekomunikacije,1,Potrebna kalibracija
+TK017,Oskiloskop,Digitalni osciloskop 100 MHz,SN367879,DSO-100,VoltLab,2022-05-09,2025-05-08,1500,TelekomLab2023,12 mjeseci,2023-05-09,Muris,Laboratorija Telekomunikacije,1,Novi uređaj
+TK018,Oskiloskop,Digitalni osciloskop 100 MHz,SN313262,DSO-100,VoltLab,2021-10-19,2024-10-18,1500,TelekomLab2023,12 mjeseci,2024-10-18,Muris,Laboratorija Telekomunikacije,1,Potrebna kalibracija
+TK019,Multimetar,Digitalni multimetar,SN122588,DM-500,UNI-T,2023-04-16,2026-04-15,250,Redovna nabavka,12 mjeseci,2025-04-15,Muris,Laboratorija Telekomunikacije,1,U servisu
+TK020,Izvor napona,Stabilizirani izvor napona,SN339829,PS-150,ElektroTech,2023-12-27,2026-12-26,900,Napajanje2022,12 mjeseci,2026-12-26,Muris,Laboratorija Telekomunikacije,1,Potrebna kalibracija
+TK021,Izvor napona,Stabilizirani izvor napona,SN472090,PS-150,ElektroTech,2022-06-01,2025-05-31,900,Napajanje2022,12 mjeseci,2023-06-01,Muris,Laboratorija Telekomunikacije,1,Korišten često
+TK022,Antenski analizator,Za testiranje antena i kablova,SN112675,AA-100,VectorTech,2020-02-15,2023-02-14,2700,AntenaTest23,12 mjeseci,2023-02-14,Muris,Laboratorija Telekomunikacije,1,Novi uređaj
+TK023,Spektralni analizator,Analizator frekvencija do 3 GHz,SN230135,SA-3000,ElektroTech,2022-12-26,2025-12-25,3200,RFProjekt22,12 mjeseci,2023-12-26,Muris,Laboratorija Telekomunikacije,1,Potrebna kalibracija
+TK024,Multimetar,Digitalni multimetar,SN431898,DM-500,UNI-T,2020-03-13,2023-03-13,250,Redovna nabavka,12 mjeseci,2022-03-13,Muris,Laboratorija Telekomunikacije,1,Novi uređaj
+TK025,Antenski analizator,Za testiranje antena i kablova,SN926642,AA-100,VectorTech,2023-10-01,2026-09-30,2700,AntenaTest23,12 mjeseci,2026-09-30,Muris,Laboratorija Telekomunikacije,1,U servisu
+TK026,Antenski analizator,Za testiranje antena i kablova,SN543336,AA-100,VectorTech,2023-10-06,2026-10-05,2700,AntenaTest23,12 mjeseci,2026-10-05,Muris,Laboratorija Telekomunikacije,1,U servisu
+TK027,Multimetar,Digitalni multimetar,SN840192,DM-500,UNI-T,2022-02-14,2025-02-13,250,Redovna nabavka,12 mjeseci,2024-02-14,Muris,Laboratorija Telekomunikacije,1,U dobrom stanju
+TK028,Oskiloskop,Digitalni osciloskop 100 MHz,SN871007,DSO-100,VoltLab,2020-08-16,2023-08-16,1500,TelekomLab2023,12 mjeseci,2022-08-16,Muris,Laboratorija Telekomunikacije,1,U servisu
+TK029,Multimetar,Digitalni multimetar,SN298478,DM-500,UNI-T,2023-02-20,2026-02-19,250,Redovna nabavka,12 mjeseci,2025-02-19,Muris,Laboratorija Telekomunikacije,1,Potrebna kalibracija
+TK030,Izvor napona,Stabilizirani izvor napona,SN829977,PS-150,ElektroTech,2023-07-20,2026-07-19,900,Napajanje2022,12 mjeseci,2024-07-19,Muris,Laboratorija Telekomunikacije,1,Novi uređaj
+TK031,Izvor napona,Stabilizirani izvor napona,SN585595,PS-150,ElektroTech,2021-08-22,2024-08-21,900,Napajanje2022,12 mjeseci,2023-08-22,Muris,Laboratorija Telekomunikacije,1,Korišten često
+TK032,Spektralni analizator,Analizator frekvencija do 3 GHz,SN904080,SA-3000,ElektroTech,2021-08-10,2024-08-09,3200,RFProjekt22,12 mjeseci,2023-08-10,Muris,Laboratorija Telekomunikacije,1,Potrebna kalibracija
+TK033,Izvor napona,Stabilizirani izvor napona,SN351565,PS-150,ElektroTech,2021-02-09,2024-02-09,900,Napajanje2022,12 mjeseci,2022-02-09,Muris,Laboratorija Telekomunikacije,1,U servisu
+TK034,Izvor napona,Stabilizirani izvor napona,SN460983,PS-150,ElektroTech,2020-10-20,2023-10-20,900,Napajanje2022,12 mjeseci,2021-10-20,Muris,Laboratorija Telekomunikacije,1,U servisu
+TK035,RF generator,Izvor radiofrekventnog signala,SN950497,RFG-2000,RF Instruments,2021-02-21,2024-02-21,4300,Projekt RF-20,12 mjeseci,2023-02-21,Muris,Laboratorija Telekomunikacije,1,U servisu
+TK036,Oskiloskop,Digitalni osciloskop 100 MHz,SN901494,DSO-100,VoltLab,2022-09-08,2025-09-07,1500,TelekomLab2023,12 mjeseci,2023-09-08,Muris,Laboratorija Telekomunikacije,1,U servisu
+TK037,Oskiloskop,Digitalni osciloskop 100 MHz,SN702503,DSO-100,VoltLab,2021-05-18,2024-05-17,1500,TelekomLab2023,12 mjeseci,2024-05-17,Muris,Laboratorija Telekomunikacije,1,U servisu
+TK038,Multimetar,Digitalni multimetar,SN777897,DM-500,UNI-T,2024-01-15,2027-01-14,250,Redovna nabavka,12 mjeseci,2027-01-14,Muris,Laboratorija Telekomunikacije,1,Novi uređaj
+TK039,Izvor napona,Stabilizirani izvor napona,SN784717,PS-150,ElektroTech,2021-06-02,2024-06-01,900,Napajanje2022,12 mjeseci,2023-06-02,Muris,Laboratorija Telekomunikacije,1,U dobrom stanju
+TK040,Oskiloskop,Digitalni osciloskop 100 MHz,SN722513,DSO-100,VoltLab,2021-11-12,2024-11-11,1500,TelekomLab2023,12 mjeseci,2023-11-12,Muris,Laboratorija Telekomunikacije,1,Potrebna kalibracija
+TK041,RF generator,Izvor radiofrekventnog signala,SN656820,RFG-2000,RF Instruments,2021-04-06,2024-04-05,4300,Projekt RF-20,12 mjeseci,2024-04-05,Muris,Laboratorija Telekomunikacije,1,Korišten često
+TK042,Antenski analizator,Za testiranje antena i kablova,SN704334,AA-100,VectorTech,2022-07-12,2025-07-11,2700,AntenaTest23,12 mjeseci,2025-07-11,Muris,Laboratorija Telekomunikacije,1,Korišten često
+TK043,Spektralni analizator,Analizator frekvencija do 3 GHz,SN836900,SA-3000,ElektroTech,2023-05-28,2026-05-27,3200,RFProjekt22,12 mjeseci,2025-05-27,Muris,Laboratorija Telekomunikacije,1,Novi uređaj
+TK044,Oskiloskop,Digitalni osciloskop 100 MHz,SN521160,DSO-100,VoltLab,2021-04-17,2024-04-16,1500,TelekomLab2023,12 mjeseci,2022-04-17,Muris,Laboratorija Telekomunikacije,1,Novi uređaj
+TK045,Spektralni analizator,Analizator frekvencija do 3 GHz,SN796588,SA-3000,ElektroTech,2021-07-05,2024-07-04,3200,RFProjekt22,12 mjeseci,2022-07-05,Muris,Laboratorija Telekomunikacije,1,U dobrom stanju
+TK046,Multimetar,Digitalni multimetar,SN664323,DM-500,UNI-T,2020-02-09,2023-02-08,250,Redovna nabavka,12 mjeseci,2023-02-08,Muris,Laboratorija Telekomunikacije,1,U dobrom stanju
+TK047,Izvor napona,Stabilizirani izvor napona,SN103297,PS-150,ElektroTech,2020-10-26,2023-10-26,900,Napajanje2022,12 mjeseci,2022-10-26,Muris,Laboratorija Telekomunikacije,1,Korišten često
+TK048,Oskiloskop,Digitalni osciloskop 100 MHz,SN661526,DSO-100,VoltLab,2022-01-05,2025-01-04,1500,TelekomLab2023,12 mjeseci,2024-01-05,Muris,Laboratorija Telekomunikacije,1,U servisu
+TK049,Antenski analizator,Za testiranje antena i kablova,SN578563,AA-100,VectorTech,2021-01-17,2024-01-17,2700,AntenaTest23,12 mjeseci,2023-01-17,Muris,Laboratorija Telekomunikacije,1,U servisu
+TK050,Antenski analizator,Za testiranje antena i kablova,SN252445,AA-100,VectorTech,2021-11-26,2024-11-25,2700,AntenaTest23,12 mjeseci,2024-11-25,Muris,Laboratorija Telekomunikacije,1,U servisu
+TK051,Oskiloskop,Digitalni osciloskop 100 MHz,SN867062,DSO-100,VoltLab,2022-06-07,2025-06-06,1500,TelekomLab2023,12 mjeseci,2024-06-06,Muris,Laboratorija Telekomunikacije,1,Korišten često
+TK052,Multimetar,Digitalni multimetar,SN904495,DM-500,UNI-T,2021-09-27,2024-09-26,250,Redovna nabavka,12 mjeseci,2022-09-27,Muris,Laboratorija Telekomunikacije,1,Novi uređaj
+TK053,Multimetar,Digitalni multimetar,SN946014,DM-500,UNI-T,2023-07-20,2026-07-19,250,Redovna nabavka,12 mjeseci,2026-07-19,Muris,Laboratorija Telekomunikacije,1,U servisu
+TK054,Spektralni analizator,Analizator frekvencija do 3 GHz,SN590975,SA-3000,ElektroTech,2020-06-29,2023-06-29,3200,RFProjekt22,12 mjeseci,2023-06-29,Muris,Laboratorija Telekomunikacije,1,Korišten često
+TK055,Multimetar,Digitalni multimetar,SN897413,DM-500,UNI-T,2020-08-05,2023-08-05,250,Redovna nabavka,12 mjeseci,2021-08-05,Muris,Laboratorija Telekomunikacije,1,Potrebna kalibracija
+TK056,Oskiloskop,Digitalni osciloskop 100 MHz,SN774489,DSO-100,VoltLab,2021-03-30,2024-03-29,1500,TelekomLab2023,12 mjeseci,2023-03-30,Muris,Laboratorija Telekomunikacije,1,U dobrom stanju
+TK057,Spektralni analizator,Analizator frekvencija do 3 GHz,SN278868,SA-3000,ElektroTech,2023-06-29,2026-06-28,3200,RFProjekt22,12 mjeseci,2024-06-28,Muris,Laboratorija Telekomunikacije,1,Potrebna kalibracija
+TK058,RF generator,Izvor radiofrekventnog signala,SN835957,RFG-2000,RF Instruments,2022-05-25,2025-05-24,4300,Projekt RF-20,12 mjeseci,2024-05-24,Muris,Laboratorija Telekomunikacije,1,Potrebna kalibracija
+TK059,RF generator,Izvor radiofrekventnog signala,SN862655,RFG-2000,RF Instruments,2020-06-28,2023-06-28,4300,Projekt RF-20,12 mjeseci,2023-06-28,Muris,Laboratorija Telekomunikacije,1,Potrebna kalibracija
+TK060,Spektralni analizator,Analizator frekvencija do 3 GHz,SN272842,SA-3000,ElektroTech,2022-07-03,2025-07-02,3200,RFProjekt22,12 mjeseci,2023-07-03,Muris,Laboratorija Telekomunikacije,1,U dobrom stanju
+TK061,Spektralni analizator,Analizator frekvencija do 3 GHz,SN612252,SA-3000,ElektroTech,2022-04-13,2025-04-12,3200,RFProjekt22,12 mjeseci,2024-04-12,Muris,Laboratorija Telekomunikacije,1,Novi uređaj
+TK062,Izvor napona,Stabilizirani izvor napona,SN261455,PS-150,ElektroTech,2020-01-15,2023-01-14,900,Napajanje2022,12 mjeseci,2022-01-14,Muris,Laboratorija Telekomunikacije,1,Novi uređaj
+TK063,Spektralni analizator,Analizator frekvencija do 3 GHz,SN191702,SA-3000,ElektroTech,2020-04-13,2023-04-13,3200,RFProjekt22,12 mjeseci,2022-04-13,Muris,Laboratorija Telekomunikacije,1,U dobrom stanju
+TK064,RF generator,Izvor radiofrekventnog signala,SN320475,RFG-2000,RF Instruments,2023-01-08,2026-01-07,4300,Projekt RF-20,12 mjeseci,2025-01-07,Muris,Laboratorija Telekomunikacije,1,U servisu
+TK065,Izvor napona,Stabilizirani izvor napona,SN910907,PS-150,ElektroTech,2021-06-08,2024-06-07,900,Napajanje2022,12 mjeseci,2024-06-07,Muris,Laboratorija Telekomunikacije,1,U dobrom stanju
+TK066,RF generator,Izvor radiofrekventnog signala,SN188510,RFG-2000,RF Instruments,2022-07-13,2025-07-12,4300,Projekt RF-20,12 mjeseci,2024-07-12,Muris,Laboratorija Telekomunikacije,1,Potrebna kalibracija
+TK067,Izvor napona,Stabilizirani izvor napona,SN569027,PS-150,ElektroTech,2022-02-16,2025-02-15,900,Napajanje2022,12 mjeseci,2025-02-15,Muris,Laboratorija Telekomunikacije,1,U dobrom stanju
+TK068,Spektralni analizator,Analizator frekvencija do 3 GHz,SN491470,SA-3000,ElektroTech,2022-01-05,2025-01-04,3200,RFProjekt22,12 mjeseci,2024-01-05,Muris,Laboratorija Telekomunikacije,1,Potrebna kalibracija
+TK069,Izvor napona,Stabilizirani izvor napona,SN337516,PS-150,ElektroTech,2023-07-08,2026-07-07,900,Napajanje2022,12 mjeseci,2024-07-07,Muris,Laboratorija Telekomunikacije,1,U servisu
+TK070,Antenski analizator,Za testiranje antena i kablova,SN633219,AA-100,VectorTech,2022-07-05,2025-07-04,2700,AntenaTest23,12 mjeseci,2024-07-04,Muris,Laboratorija Telekomunikacije,1,U servisu
