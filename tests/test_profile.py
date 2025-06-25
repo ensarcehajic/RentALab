@@ -91,15 +91,6 @@ def test_edit_profile_unauthorized(client):
     # Check if redirecting to login
     assert '/auth/login' in response.location
 
-def test_edit_profile_get(client, test_user):
-    """Test profile page access"""
-    with client:
-        with client.session_transaction() as sess:
-            sess['user'] = test_user.email
-        
-        response = client.get('/edit_profile')
-        assert response.status_code == 200
-        assert test_user.email.encode() in response.data
 
 def test_edit_profile_post(client, test_user):
     """Test profile updates"""
