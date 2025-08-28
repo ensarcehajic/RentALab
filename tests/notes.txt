@@ -16,4 +16,3 @@ moze se dodati:
 -s da sve pokaze
 
 -dodan prazan __init__.py file u ovaj folder, potreban za testiranje profile.py
--dodajem liniju za potrebe testiranja CI yml fajla (Faris)

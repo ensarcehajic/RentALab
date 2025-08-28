@@ -89,7 +89,6 @@ def register():
     form = RegisterForm()
     if form.validate_on_submit():
 
-        # Check if checkbox is ticked
         if 'agree' not in request.form:
             flash('You must agree to the Terms of Service and EULA to register.', 'danger')
             return redirect(url_for('login_bp.register'))
@@ -179,7 +178,6 @@ def dashboard():
 
 @login_bp.route('/logout')
 def logout():
-    # Explicitly remove all authentication-related session variables
     session.pop('user', None)
     session.pop('role', None)
     session.pop('_fresh', None)  

@@ -32,7 +32,6 @@ def edit_profile():
     can_edit_surname = (user.surname == 'None')
 
     if form.validate_on_submit():
-        # Update only if allowed
         if can_edit_name:
             user.name = form.name.data
         if can_edit_surname:

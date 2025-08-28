@@ -11,15 +11,12 @@ from flask_mail import Message
 from App import mail
 from App.models.database import db, Oprema, Rented, User
 
-# Define paths for templates and static files
 current_dir = os.path.dirname(os.path.abspath(__file__))
 template_dir = os.path.join(current_dir, 'templates')
 static_dir = os.path.join(current_dir, 'static')
 
-# Define the Blueprint
 rented_bp = Blueprint('rented_bp', __name__, template_folder=template_dir, static_folder=static_dir)
 
-# Rental Form Definition
 class RentedForm(FlaskForm):
     # --- Renters' user-related info ---
     issued_by_name = StringField("Issuer Name", default="")
@@ -77,32 +74,26 @@ def rent(inv_num):
 
     form = RentedForm()
 
-    # Only allow specific fields to be edited
     fields_to_unlock = ['approver_name', 'project', 'subject', 'note_rent', 'submit']
     for field_name, field in form._fields.items():
         if field_name not in fields_to_unlock:
             field.render_kw = field.render_kw or {}
             field.render_kw['readonly'] = True
 
-    # Get all professors and use ID as value, name as label
     professors = User.query.filter(User.role.ilike('professor')).all()
     form.approver_name.choices = [(str(prof.id), f"{prof.name} {prof.surname}") for prof in professors]
 
-    # Load equipment
     equipment = Oprema.query.filter_by(inventory_number=inv_num).first()
     if not equipment:
         flash(f"Equipment with inventory number {inv_num} not found.", "danger")
         return redirect(url_for('login_bp.dashboard'))
 
-    # Get current user as renter
     current_user = db.session.query(User).filter_by(email=session['user']).first()
 
 
-    # Get the one and only laborant as issuer
     issuer = User.query.filter(User.role.ilike('laborant')).first()
 
     if request.method == 'GET':
-        # Equipment fields
         form.inventory_number.data = equipment.inventory_number
         form.name.data = equipment.name
         form.description.data = equipment.description
@@ -121,22 +112,19 @@ def rent(inv_num):
             form.renter_telephone.data = current_user.phone_number
             form.renter_address.data = current_user.address
 
-        # Show issuer's name for display only
         if issuer:
             form.issued_by_name.data = f"{issuer.name} {issuer.surname}"
 
     error_message = None
 
     if form.validate_on_submit():
-        # Use IDs directly
         renter_id = current_user.id if current_user else None
-        approver_id = int(form.approver_name.data)  # selected professor's ID
+        approver_id = int(form.approver_name.data)
         issuer_id = issuer.id if issuer else None
         equipment_id = equipment.id if equipment else None
 
         approver = User.query.get(approver_id)
 
-        # Validate roles
         if not current_user:
             error_message = 'Renter not found (session issue).'
         elif not approver:
@@ -201,7 +189,6 @@ def rent(inv_num):
 
 
 
-#shows all "requests" aka rents in the browser
 @rented_bp.route('/request_browse', methods=['GET'])
 def req_browse():
     if 'user' not in session:
@@ -209,33 +196,28 @@ def req_browse():
 
     current_user = User.query.filter_by(email=session['user']).first()
 
-    # Dohvati filter iz URL-a (npr. ?status=pending) ili podesi na 'pending' ako nema
     status_filter = request.args.get('status', 'pending').lower()
 
-    # Bazni query – svi zahtjevi u kojima učestvuje trenutni korisnik
     base_query = Rented.query.filter(
         (Rented.renter_id == current_user.id) |
         (Rented.approver_id == current_user.id) |
         (Rented.issued_by_id == current_user.id)
     )
 
-    # Broj zahtjeva po statusima
     count_all = base_query.count()
     count_pending = base_query.filter(Rented.status.ilike('pending')).count()
     count_approved = base_query.filter(Rented.status.ilike('approved')).count()
     count_ended = base_query.filter(Rented.status.ilike('ended')).count()
 
-    # Primijeni filtriranje po statusu ako je odabrano
     if status_filter in ['pending', 'approved', 'ended']:
         query = base_query.filter(Rented.status.ilike(status_filter))
     elif status_filter == 'all':
         query = base_query
     else:
-        query = base_query.filter(Rented.status.ilike('pending'))  # fallback ako neko ručno upiše nepostojeći status
+        query = base_query.filter(Rented.status.ilike('pending'))
 
     rented_raw = query.all()
 
-    # Priprema liste za prikaz u šablonu
     rented_list = []
     for rent in rented_raw:
         renter = User.query.get(rent.renter_id)
@@ -262,7 +244,6 @@ def req_browse():
     )
 
 
-#and finaly it takes the rent_id (primary key) after you selected a "request" in the above section and shows it in detail
 @rented_bp.route('/request/<rented_id>', methods=['GET', 'POST'])
 def request_view(rented_id):
     if 'user' not in session:
@@ -325,11 +306,11 @@ def request_view(rented_id):
                 rented.status = 'Approved'
                 rented.start_date = datetime.utcnow()
                 if equipment and equipment.available > 0:
-                    equipment.available -= 1  # reduce available count by one
+                    equipment.available -= 1  
             
             elif prev_status == 'pending' and new_status == 'rejected':
                 if equipment:
-                    equipment.available += 1  # increment available count by one to return it
+                    equipment.available += 1 
                 db.session.delete(rented)
                 db.session.commit()
                 return redirect(url_for('login_bp.dashboard'))
@@ -338,7 +319,7 @@ def request_view(rented_id):
                 rented.status = 'Ended'
                 rented.end_date = datetime.utcnow()
                 if equipment:
-                    equipment.available += 1  # increment available count by one to return it
+                    equipment.available += 1
 
 
             db.session.commit()

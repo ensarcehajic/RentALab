@@ -1,12 +1,12 @@
 # Rent-A-Lab
 
-Projekat za iznajmljivanje laboratorijske opreme na Fakultetu elektrotehnike u Tuzli.
+Ovaj repozitorij predstavlja kulminaciju rada ovog tima na izradi praktičnog rješenja za sistem upravljanja iznajmljivanjem laboratorijske opreme na Fakultetu elektrotehnike Univerziteta u Tuzli. Projekat je razvijen s ciljem digitalizacije i unapređenja procesa rezervacije i praćenja korištenja opreme u i izvan prostora laboratorije, omogućavajući studentima i osoblju jednostavniji i transparentniji način upravljanja resursima.
 
 ## Informacije o timu
 
 - Ime tima: **LabSquad**
 - Članovi tima: Džana Dugonjić, Faris Alić, Adnan Hasić, Tarik Vehab, Ensar Ćehajić, Edin Ahmetbegovic
-- Vođa tima: **Ensar Ćehajić**
+- Vođa tima: Ensar Ćehajić
 
 ## Komunikacija
 
@@ -19,7 +19,7 @@ Projekat za iznajmljivanje laboratorijske opreme na Fakultetu elektrotehnike u T
 - **Backend**  : Python, Flask, SQLAlchemy
 - **Frontend** : HTML, CSS, Jinja2
 - **Database** : PostgreSQL
-- **Alatt**    : VS Code, GitHub, Jira
+- **Alati**    : VS Code, GitHub, Jira
 
 
 ## Set-up
